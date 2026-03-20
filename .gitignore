@@ -1,0 +1,9 @@
+# Claude / agent system files
+.claude/
+.agent/
+.agents/
+skills-lock.json
+
+# Temporary scripts
+patch.py
+*.tmp.py
