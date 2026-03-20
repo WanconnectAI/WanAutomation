@@ -830,6 +830,57 @@
       .seats-num { font-size: 3rem; }
       .c-unit { min-width: 48px; }
     }
+
+    /* ─── FAQ ─── */
+    .faq {
+      background: var(--white);
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+      border-top: 3px solid var(--blue);
+    }
+    .faq-inner { max-width: 860px; margin: 0 auto; }
+    .faq-grid { display: flex; flex-direction: column; gap: .65rem; }
+    .faq-item {
+      border: 1.5px solid #e3ecff; border-radius: 8px;
+      overflow: hidden; background: var(--white);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .faq-item[open] {
+      border-color: var(--blue);
+      box-shadow: 0 4px 20px rgba(21,101,192,.1);
+    }
+    .faq-q {
+      display: flex; align-items: center; gap: .85rem;
+      padding: 1rem 1.3rem; cursor: pointer; list-style: none;
+      font-weight: 700; font-size: .95rem; color: var(--text);
+      user-select: none; transition: background .15s;
+    }
+    .faq-q:hover { background: #f4f8ff; }
+    .faq-q::-webkit-details-marker { display: none; }
+    .faq-qnum {
+      background: var(--navy); color: var(--yellow);
+      font-family: 'Noto Serif SC', serif;
+      font-size: .72rem; font-weight: 900;
+      padding: .2rem .55rem; border-radius: 3px;
+      flex-shrink: 0; letter-spacing: .04em;
+    }
+    .faq-qtxt { flex: 1; }
+    .faq-arrow {
+      color: var(--blue); font-size: .65rem; flex-shrink: 0;
+      transition: transform .25s ease;
+    }
+    .faq-item[open] .faq-arrow { transform: rotate(180deg); }
+    .faq-a {
+      padding: .9rem 1.3rem 1.2rem calc(1.3rem + 2.3rem);
+      border-top: 1px solid #e3ecff;
+      color: #4a5a80; font-size: .9rem; line-height: 1.8;
+    }
+    .faq-a ul { padding-left: 1.1rem; margin: .4rem 0 0; }
+    .faq-a ul li { margin-bottom: .4rem; }
+    .faq-a p { margin: 0 0 .5rem; }
+    .faq-a p:last-child { margin-bottom: 0; }
+    @media (max-width: 600px) {
+      .faq-a { padding-left: 1.3rem; }
+    }
   </style>
 </head>
 <body>
@@ -1124,20 +1175,20 @@
     <!-- SPEAKER 1: Yap Wan Ching (Day 1) -->
     <div class="speaker-card-v2">
       <div class="speaker-photo-col-sm">
-        <img src="speaker-ywc.jpg" alt="叶婉清 Yap Wan Ching"
+        <img src="speaker-ywc.jpg" alt="叶婉贞 Yap Wan Ching"
              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
         <div class="speaker-photo-fallback-sm" style="display:none">
           <div class="initials">叶</div>
         </div>
         <div class="speaker-photo-overlay-sm">
-          <div class="speaker-name-sm">叶婉清</div>
+          <div class="speaker-name-sm">叶婉贞</div>
           <div class="speaker-creds-sm">Yap Wan Ching<br>CA(M) · FCCA · ICSA · ACTIM · ASEAN CPA</div>
         </div>
       </div>
       <div class="speaker-info-sm">
         <span class="speaker-day-badge-sm"><span class="zh">主讲第一天 · 4月25日（周六）</span><span class="en">Presenting Day 1 · 25 Apr (Sat)</span></span>
         <div class="speaker-bio-sm">
-          <span class="zh">叶婉清女士是 Wanconnect Management Service PLT 联合创始人及执行合伙人，在会计、审计及企业管治领域拥有超过 <strong style="color:var(--sky)">20 年</strong>丰富经验。
+          <span class="zh">叶婉贞女士是 Wanconnect Management Service PLT 联合创始人及执行合伙人，在会计、审计及企业管治领域拥有超过 <strong style="color:var(--sky)">20 年</strong>丰富经验。
           <br><br>
           她是马来西亚特许会计师 CA(M)、FCCA、ICSA 及东盟注册会计师（ASEAN CPA），同时为 HRD Corp 核准培训师。擅长以深入浅出的方式讲解 AI 及自动化概念，专注帮助会计与行政专业人士掌握数字化转型技能。</span>
           <span class="en">Ms. Yap Wan Ching is Co-Founder and Managing Partner of Wanconnect Management Service PLT, with over <strong style="color:var(--sky)">20 years</strong> of experience in accounting, audit, and corporate governance.
@@ -1245,7 +1296,7 @@
     <div class="day-panel active" id="day1">
       <div class="day-trainer">
         <div class="dot"></div>
-        <div><span class="zh">主讲：</span><span class="en">Trainer: </span><strong>叶婉清 Yap Wan Ching</strong> &nbsp;|&nbsp; CA(M), FCCA, ICSA, ACTIM, ASEAN CPA</div>
+        <div><span class="zh">主讲：</span><span class="en">Trainer: </span><strong>叶婉贞 Yap Wan Ching</strong> &nbsp;|&nbsp; CA(M), FCCA, ICSA, ACTIM, ASEAN CPA</div>
       </div>
       <div>
         <div class="tl-row"><div class="tl-time">9:00 – 9:30am</div><div><div class="tl-head"><span class="zh">报到注册</span><span class="en">Registration &amp; Sign-In</span></div></div></div>
@@ -1419,6 +1470,143 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
         <span class="zh">Facebook 学员反馈</span><span class="en">Facebook Reviews</span>
       </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq" id="faq">
+  <div class="faq-inner">
+    <div class="section-label"><span class="zh">常见问题</span><span class="en">Frequently Asked Questions</span></div>
+    <h2 class="section-title">
+      <span class="zh">你最想知道的<span class="blue">问题</span>，都在这里</span>
+      <span class="en">Your Top Questions, <span class="blue">Answered</span></span>
+    </h2>
+    <div class="faq-grid">
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q1</span>
+          <span class="faq-qtxt"><span class="zh">参加工作坊需要带什么？</span><span class="en">What do I need to bring to the workshop?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <ul>
+            <li><span class="zh">一台笔记本电脑</span><span class="en">A laptop</span></li>
+            <li><span class="zh">企业运营文件样本（如销售发票、供应商发票），以便在课堂上进行讲解</span><span class="en">Sample operational documents (e.g., sales invoices, supplier invoices) for clarification during the session</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q2</span>
+          <span class="faq-qtxt"><span class="zh">工作坊的内容是什么？</span><span class="en">What is the workshop about?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <p><span class="zh">我们的电子发票专家将指导学员：</span><span class="en">Our e-Invoicing experts will guide participants to:</span></p>
+          <ul>
+            <li><span class="zh">为贵公司起草一份针对性的电子发票实施影响评估报告。</span><span class="en">Draft a company-specific impact study report for e-invoice implementation.</span></li>
+            <li><span class="zh">制定行动计划（或修订现有标准操作程序），确保顺利过渡至电子发票系统。</span><span class="en">Develop a proposed action plan (or revise existing SOPs) to ensure seamless adoption of e-invoicing.</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q3</span>
+          <span class="faq-qtxt"><span class="zh">工作坊结束后，我能获得什么成果？</span><span class="en">What will I gain by the end of the workshop?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <p><span class="zh">完成一份专属于贵公司的电子发票实施影响评估报告及定制化行动计划。</span><span class="en">A finalized e-invoice implementation impact study report and a customized action plan for your company.</span></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q4</span>
+          <span class="faq-qtxt"><span class="zh">工作坊的费用是多少？</span><span class="en">How much does the workshop cost?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <ul>
+            <li><span class="zh">每位学员 RM5,000，或两位学员共 RM9,000。</span><span class="en">RM5,000 per participant OR RM9,000 for two participants.</span></li>
+            <li><span class="zh">可通过 HRDC 全额报销，实质上对贵公司<strong>零成本</strong>。</span><span class="en">Full reimbursement is available through HRDC — <strong>"zero cost to your company"</strong>.</span></li>
+            <li><span class="zh">须缴付 10% 定金以确认席位，待 HRDC 拨款后将全额退还。</span><span class="en">A 10% deposit is required to secure your seat, which will be fully refunded after HRDC disburses funds to us.</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q5</span>
+          <span class="faq-qtxt"><span class="zh">哪类企业适合参加此工作坊？</span><span class="en">What type of company is suitable for this workshop?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <ul>
+            <li><span class="zh">业务结构较为简单。</span><span class="en">A simple business structure.</span></li>
+            <li><span class="zh">主要业务活动不超过两项。</span><span class="en">No more than two primary business activities.</span></li>
+            <li><span class="zh">使用标准会计软件（如 AutoCount、SQL）。</span><span class="en">Use of standard accounting software (e.g., AutoCount, SQL).</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q6</span>
+          <span class="faq-qtxt"><span class="zh">哪些人应该参加？</span><span class="en">Who should attend?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <p><span class="zh">负责推行电子发票的关键人员，如：会计师、财务总监、董事或合规主任。</span><span class="en">Key personnel responsible for e-invoicing implementation, such as: Accountants, CFOs, directors, or compliance officers.</span></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q7</span>
+          <span class="faq-qtxt"><span class="zh">没有电子发票基础知识，可以参加吗？</span><span class="en">Can I attend without prior e-invoicing knowledge?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <p><span class="zh">建议参加者具备基本的电子发票概念，以便从工作坊中获得最大收益。</span><span class="en">Basic understanding of e-invoicing is recommended for optimal workshop outcomes.</span></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q8</span>
+          <span class="faq-qtxt"><span class="zh">工作坊结束后，如有疑问怎么办？</span><span class="en">What if I have questions after the workshop?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <p><span class="zh">所有学员均可享有 <strong>1 个月</strong>的免费电话支援服务。</span><span class="en"><strong>1 month</strong> of complimentary phone support is provided to all participants.</span></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q9</span>
+          <span class="faq-qtxt"><span class="zh">HRDC 报销的流程是什么？</span><span class="en">What is the process for claiming HRDC reimbursement?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <ul>
+            <li><span class="zh">登录 HRDC 门户，确认账户内有足够资金。</span><span class="en">Login to HRDC Portal to ensure sufficient funds in your account.</span></li>
+            <li><span class="zh">填写报名表格并缴付 10% 定金。</span><span class="en">Complete the registration form and pay the 10% deposit.</span></li>
+            <li><span class="zh">我们将提供相关文件协助您申请 HRDC 培训津贴。</span><span class="en">We'll provide documents to assist with your HRDC grant application.</span></li>
+            <li><strong><span class="zh">请务必在工作坊开始前获得 HRDC 批准。</span><span class="en">Make sure HRDC approves your grant <u>before</u> the workshop.</span></strong></li>
+            <li><span class="zh">出席工作坊。</span><span class="en">Attend the workshop.</span></li>
+            <li><span class="zh">工作坊结束后，我们将向您发送 JD14 表格，请签署/盖章后归还。</span><span class="en">We'll share Form JD14 with you — please return it signed/stamped post-workshop.</span></li>
+            <li><span class="zh">收到您的 JD14 后，我们向 HRDC 提交报销申请。</span><span class="en">We submit the claim to HRDC after receiving your JD14.</span></li>
+            <li><span class="zh">HRDC 拨款后，我们将全额退还您的 10% 定金。</span><span class="en">Once HRDC disburses funds, we refund your 10% deposit in full.</span></li>
+          </ul>
+        </div>
+      </details>
+
     </div>
   </div>
 </section>
