@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>自动化工作流程入门课程 | Wanconnect · 2026年4月25–26日</title>
+  <meta name="title-zh" content="自动化工作流程入门课程 | Wanconnect · 2026年4月25–26日" />
+  <meta name="title-en" content="Workflow Automation Beginner Course | Wanconnect · 25–26 Apr 2026" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
@@ -1714,6 +1716,8 @@
     document.documentElement.setAttribute('data-lang', lang);
     document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
     document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    var titleMeta = document.querySelector('meta[name="title-' + lang + '"]');
+    if (titleMeta) document.title = titleMeta.getAttribute('content');
     try { localStorage.setItem('pref-lang', lang); } catch(e) {}
   }
   (function() {
