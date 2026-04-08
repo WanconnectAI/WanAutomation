@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanAutomationSeries | Wanconnect</title>
+  <meta name="title-zh" content="WanAutomationSeries | Wanconnect" />
+  <meta name="title-en" content="WanAutomationSeries | Wanconnect" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0a1a3a;
+      --navy2:  #0f2350;
+      --navy3:  #162d60;
+      --blue:   #1565c0;
+      --blue2:  #1976d2;
+      --sky:    #42a5f5;
+      --yellow: #ffe800;
+      --yellow2:#f5d800;
+      --red:    #e53935;
+      --red2:   #c62828;
+      --white:  #f8f9ff;
+      --cream:  #f0f4ff;
+      --muted:  #7b8db5;
+      --text:   #0d1b36;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans SC', sans-serif; background: var(--white); color: var(--text); overflow-x: hidden; line-height: 1.7; }
+
+    /* ─── STICKY NAV ─── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1rem, 3vw, 2.5rem); height: 62px;
+      border-bottom: 2px solid var(--blue);
+    }
+    .nav-logo { display: flex; align-items: center; gap: .7rem; }
+    .nav-logo img { height: 36px; object-fit: contain; }
+    .nav-logo-text { color: var(--white); font-size: .75rem; font-weight: 500; opacity: .75; }
+    .nav-cta {
+      background: var(--red); color: var(--white);
+      font-weight: 900; font-size: .9rem;
+      padding: .5rem 1.4rem; border-radius: 4px;
+      text-decoration: none;
+      border: none;
+      letter-spacing: .03em;
+      box-shadow: 0 3px 12px rgba(229,57,53,.5);
+      transition: background .15s, transform .1s;
+      animation: navpulse 2s ease-in-out 3s infinite;
+    }
+    @keyframes navpulse { 0%,100%{box-shadow:0 3px 12px rgba(229,57,53,.5)} 50%{box-shadow:0 3px 24px rgba(229,57,53,.85)} }
+    .nav-cta:hover { background: var(--red2); transform: scale(1.04); }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: var(--navy);
+      padding: 80px clamp(1rem, 5vw, 3rem) 0;
+      min-height: 100svh;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(21,101,192,.25) 0%, transparent 55%),
+                  radial-gradient(ellipse 50% 50% at 0% 100%, rgba(255,232,0,.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    /* Decorative lines */
+    .hero-lines {
+      position: absolute; top: 0; right: 0; bottom: 0;
+      width: 40%; pointer-events: none; overflow: hidden;
+    }
+    .hero-lines::after {
+      content: '';
+      position: absolute; right: -100px; top: -100px;
+      width: 600px; height: 600px;
+      border: 80px solid rgba(21,101,192,.08);
+      border-radius: 50%;
+    }
+    .hero-lines::before {
+      content: '';
+      position: absolute; right: -60px; top: 80px;
+      width: 400px; height: 400px;
+      border: 40px solid rgba(255,232,0,.06);
+      border-radius: 50%;
+    }
+    .hero-inner { max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 1; padding: clamp(2rem,5vw,4rem) 0; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(255,232,0,.12); border: 1px solid rgba(255,232,0,.35);
+      color: var(--yellow); font-size: .78rem; font-weight: 700;
+      padding: .3rem .9rem; border-radius: 2px; letter-spacing: .08em;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .hero-eyebrow span { width: 6px; height: 6px; border-radius: 50%; background: var(--yellow); animation: blink 1.5s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .hero-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(2rem, 5.5vw, 4.2rem);
+      font-weight: 900; color: var(--white); line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .hero-title .yellow { color: var(--yellow); }
+    .hero-title .sky { color: var(--sky); }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.3rem); color: rgba(248,249,255,.7);
+      max-width: 620px; margin-bottom: 2rem; font-weight: 300;
+    }
+    .hero-sub strong { color: var(--yellow); font-weight: 700; }
+    /* Meta pills */
+    .hero-meta {
+      display: flex; flex-wrap: wrap; gap: .8rem; margin-bottom: 2.5rem;
+    }
+    .meta-pill {
+      display: flex; align-items: center; gap: .55rem;
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.15);
+      padding: .5rem 1rem; border-radius: 4px;
+      font-size: .9rem; color: var(--white);
+    }
+    .meta-pill .icon { font-size: 1.1rem; }
+    .meta-pill strong { color: var(--yellow); }
+    .date-batch { display: flex; flex-direction: column; gap: .4rem; }
+    .date-row { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; line-height: 1.4; }
+    .badge-soldout {
+      background: rgba(229,57,53,.9); color: #fff;
+      font-size: .6rem; font-weight: 900; padding: .18rem .52rem;
+      border-radius: 3px; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap;
+    }
+    .badge-selling {
+      background: var(--yellow); color: var(--navy);
+      font-size: .6rem; font-weight: 900; padding: .18rem .52rem;
+      border-radius: 3px; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap;
+      animation: yellowPulse 2s ease-in-out infinite;
+    }
+    /* Urgency bar */
+    .hero-urgency {
+      background: rgba(229,57,53,.15);
+      border: 1px solid rgba(229,57,53,.4);
+      color: #ff8a80; font-size: .88rem; font-weight: 700;
+      padding: .7rem 1.2rem; border-radius: 4px;
+      margin-bottom: 2rem; display: flex; align-items: center; gap: .7rem;
+    }
+    .hero-urgency::before { content: '⚠'; font-size: 1.1rem; }
+    /* EN mode: restore correct display types for flex containers that use zh/en wrapper classes */
+    html[data-lang="en"] .hero-eyebrow.en { display: inline-flex !important; }
+    html[data-lang="en"] .hero-urgency.en { display: flex !important; }
+    /* Block-level zh/en spans inside headings and paragraphs must stack, not sit inline */
+    .hero-title .en, .hero-title .zh,
+    .section-title .en, .section-title .zh,
+    .pain-head .en, .pain-head .zh,
+    .solution-title .en, .solution-title .zh,
+    .guarantee-title .en, .guarantee-title .zh,
+    .final-cta-title .en, .final-cta-title .zh,
+    .mid-cta-title .en, .mid-cta-title .zh { display: block; }
+    html[data-lang="en"] .hero-title .zh,
+    html[data-lang="en"] .section-title .zh,
+    html[data-lang="en"] .pain-head .zh,
+    html[data-lang="en"] .solution-title .zh,
+    html[data-lang="en"] .guarantee-title .zh,
+    html[data-lang="en"] .final-cta-title .zh,
+    html[data-lang="en"] .mid-cta-title .zh { display: none !important; }
+    html[data-lang="en"] .hero-title .en,
+    html[data-lang="en"] .section-title .en,
+    html[data-lang="en"] .pain-head .en,
+    html[data-lang="en"] .solution-title .en,
+    html[data-lang="en"] .guarantee-title .en,
+    html[data-lang="en"] .final-cta-title .en,
+    html[data-lang="en"] .mid-cta-title .en { display: block !important; }
+    /* Chinese mode: hide all .en heading spans */
+    html[data-lang="zh"] .hero-title .en,
+    html[data-lang="zh"] .section-title .en,
+    html[data-lang="zh"] .pain-head .en,
+    html[data-lang="zh"] .solution-title .en,
+    html[data-lang="zh"] .guarantee-title .en,
+    html[data-lang="zh"] .final-cta-title .en,
+    html[data-lang="zh"] .mid-cta-title .en { display: none !important; }
+    /* Countdown */
+    .countdown {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      align-items: center; margin-bottom: 2.5rem;
+    }
+    .countdown-label { color: var(--sky); font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .countdown-units { display: flex; gap: .6rem; }
+    .c-unit {
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+      border-radius: 6px; padding: .7rem .9rem; text-align: center; min-width: 56px;
+    }
+    .c-num { font-family: 'Noto Serif SC', serif; font-size: 1.8rem; font-weight: 900; color: var(--white); line-height: 1; display: block; }
+    .c-lbl { font-size: .65rem; color: var(--muted); margin-top: .2rem; display: block; }
+    /* CTA buttons */
+    .hero-btns { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .btn-hero {
+      background: var(--red); color: var(--white);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 900; font-size: 1.1rem;
+      padding: 1rem 2.6rem; border-radius: 4px;
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: 0 6px 24px rgba(229,57,53,.55);
+      transition: background .15s, transform .12s, box-shadow .15s;
+      display: inline-block; letter-spacing: .03em;
+    }
+    .btn-hero:hover { background: var(--red2); transform: translateY(-2px); box-shadow: 0 10px 32px rgba(229,57,53,.7); }
+    .btn-outline {
+      background: transparent; color: var(--white);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 500; font-size: 1rem;
+      padding: 1rem 2rem; border-radius: 4px;
+      text-decoration: none; border: 1.5px solid rgba(255,255,255,.3);
+      transition: border-color .15s, background .15s;
+      display: inline-block;
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,.7); background: rgba(255,255,255,.05); }
+    /* Price badge on hero */
+    .hero-price {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem;
+      margin-top: 2rem;
+      padding-top: 2rem; border-top: 1px solid rgba(255,255,255,.1);
+    }
+    .price-from { font-size: .8rem; color: var(--muted); }
+    .price-big {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 2rem; font-weight: 900; color: var(--yellow);
+    }
+    .price-big span { font-size: 1rem; font-weight: 400; color: rgba(255,255,255,.5); }
+    .price-strike { font-size: .9rem; color: rgba(255,255,255,.35); text-decoration: line-through; }
+    .price-hrdc {
+      background: var(--yellow); color: var(--navy);
+      font-size: .75rem; font-weight: 900; padding: .3rem .7rem;
+      border-radius: 3px; letter-spacing: .05em;
+    }
+
+    /* ─── PAIN POINTS ─── */
+    .pain {
+      background: #0f1e42;
+      padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 5vw, 3rem);
+      border-top: 3px solid var(--blue);
+    }
+    .pain-inner { max-width: 900px; margin: 0 auto; }
+    .pain-head {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+      font-weight: 900; color: var(--white); text-align: center;
+      margin-bottom: .6rem;
+    }
+    .pain-head .yellow { color: var(--yellow); }
+    .pain-desc { color: var(--muted); text-align: center; margin-bottom: 2.5rem; }
+    .pain-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.06); border-radius: 8px; overflow: hidden;
+    }
+    .pain-item {
+      background: #0f1e42; padding: 1.6rem 1.4rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .pain-x { font-size: 1.4rem; flex-shrink: 0; margin-top: .1rem; }
+    .pain-text { font-size: .92rem; color: rgba(248,249,255,.75); line-height: 1.6; }
+    .pain-text strong { color: #ff8a80; }
+    /* Arrow down */
+    .pain-arrow { text-align: center; padding: 2rem 0 1rem; font-size: 2rem; color: var(--yellow); }
+
+    /* ─── SOLUTION ─── */
+    .solution {
+      background: var(--blue);
+      padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 5vw, 3rem);
+    }
+    .solution-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+    .solution-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      font-weight: 900; color: var(--white); margin-bottom: 1rem;
+    }
+    .solution-title .yellow { color: var(--yellow); }
+    .solution-desc { color: rgba(255,255,255,.8); font-size: 1.05rem; max-width: 600px; margin: 0 auto 2.5rem; }
+    .solution-btn {
+      background: var(--yellow); color: var(--navy);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 900; font-size: 1.15rem;
+      padding: 1rem 3rem; border-radius: 4px;
+      text-decoration: none; display: inline-block;
+      box-shadow: 0 6px 24px rgba(255,232,0,.45);
+      transition: transform .12s, box-shadow .15s;
+    }
+    .solution-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(255,232,0,.6); }
+
+    /* ─── 6 BENEFITS ─── */
+    .benefits {
+      background: var(--white);
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+    }
+    .section-label {
+      text-align: center; font-size: .75rem; font-weight: 900;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: .7rem;
+    }
+    .section-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+      font-weight: 900; color: var(--text); text-align: center;
+      line-height: 1.3; margin-bottom: 3rem;
+    }
+    .section-title .blue { color: var(--blue); }
+    .section-title .red { color: var(--red); }
+    .benefits-grid {
+      max-width: 1000px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .benefit-card {
+      border: 2px solid #e3ecff;
+      border-radius: 8px;
+      padding: 1.8rem 1.6rem;
+      position: relative;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      background: var(--white);
+    }
+    .benefit-card:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(21,101,192,.12); }
+    .benefit-num {
+      position: absolute; top: -1px; left: 1.4rem;
+      background: var(--navy); color: var(--yellow);
+      font-family: 'Noto Serif SC', serif;
+      font-size: .78rem; font-weight: 900; padding: .2rem .6rem;
+      letter-spacing: .05em;
+    }
+    .benefit-icon { font-size: 2rem; margin: .6rem 0 1rem; display: block; }
+    .benefit-title { font-weight: 900; font-size: 1.05rem; color: var(--text); margin-bottom: .6rem; line-height: 1.4; }
+    .benefit-desc { font-size: .88rem; color: #4a5a80; line-height: 1.7; }
+    .benefit-tag {
+      display: inline-block; margin-top: .8rem;
+      background: var(--yellow); color: var(--navy);
+      font-size: .72rem; font-weight: 900; padding: .22rem .65rem;
+      border-radius: 2px; letter-spacing: .04em;
+    }
+    .benefit-tag.blue-tag { background: var(--blue); color: var(--white); }
+
+    /* ─── MID CTA ─── */
+    .mid-cta {
+      background: var(--navy);
+      padding: clamp(3rem, 5vw, 4rem) clamp(1rem, 5vw, 3rem);
+      border-top: 3px solid var(--yellow);
+      border-bottom: 3px solid var(--yellow);
+    }
+    .mid-cta-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+    .mid-cta-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 900; color: var(--white); margin-bottom: .7rem;
+    }
+    .mid-cta-title .yellow { color: var(--yellow); }
+    .mid-cta-sub { color: var(--muted); margin-bottom: 1.8rem; font-size: .95rem; }
+    .btn-cta-yellow {
+      background: var(--yellow); color: var(--navy);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 900; font-size: 1.1rem;
+      padding: .95rem 2.8rem; border-radius: 4px;
+      text-decoration: none; display: inline-block;
+      box-shadow: 0 6px 20px rgba(255,232,0,.4);
+      transition: transform .12s, box-shadow .15s;
+    }
+    .btn-cta-yellow:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,232,0,.6); }
+    .btn-cta-red {
+      background: var(--red); color: var(--white);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 900; font-size: 1.1rem;
+      padding: .95rem 2.8rem; border-radius: 4px;
+      text-decoration: none; display: inline-block;
+      box-shadow: 0 6px 20px rgba(229,57,53,.45);
+      transition: background .15s, transform .12s;
+    }
+    .btn-cta-red:hover { background: var(--red2); transform: translateY(-2px); }
+
+    /* ─── PRICING ─── */
+    .pricing {
+      background: var(--cream);
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+    }
+    .pricing-grid {
+      max-width: 900px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.2rem;
+    }
+    .price-card {
+      background: var(--white); border: 2px solid #d4e0ff;
+      border-radius: 10px; padding: 2rem 1.6rem;
+      position: relative; transition: transform .2s, box-shadow .2s;
+    }
+    .price-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(21,101,192,.12); }
+    .price-card.featured {
+      background: var(--navy); border-color: var(--yellow);
+      box-shadow: 0 8px 32px rgba(10,26,58,.3);
+    }
+    .price-card.featured * { color: var(--white); }
+    .featured-badge {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: var(--red); color: var(--white);
+      font-size: .72rem; font-weight: 900; padding: .25rem .9rem;
+      border-radius: 100px; white-space: nowrap; letter-spacing: .05em;
+    }
+    .price-type { font-size: .75rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--blue); margin-bottom: .8rem; }
+    .price-card.featured .price-type { color: var(--yellow); }
+    .price-amount { font-family: 'Noto Serif SC', serif; font-size: 2.6rem; font-weight: 900; color: var(--text); line-height: 1; }
+    .price-amount sub { font-size: 1rem; font-weight: 400; vertical-align: super; }
+    .price-duration { font-size: .82rem; color: var(--muted); margin: .4rem 0; }
+    .price-card.featured .price-duration { color: rgba(255,255,255,.6); }
+    .price-ori { font-size: .82rem; color: #aab; text-decoration: line-through; }
+    .price-card.featured .price-ori { color: rgba(255,255,255,.35); }
+    .price-features { list-style: none; margin-top: 1.4rem; display: flex; flex-direction: column; gap: .55rem; }
+    .price-features li { font-size: .87rem; color: #4a5a80; display: flex; align-items: flex-start; gap: .6rem; }
+    .price-card.featured .price-features li { color: rgba(255,255,255,.8); }
+    .price-features li::before { content: '✓'; flex-shrink: 0; background: var(--blue); color: var(--white); width: 17px; height: 17px; border-radius: 50%; display: grid; place-items: center; font-size: .65rem; font-weight: 900; margin-top: .1rem; }
+    .price-card.featured .price-features li::before { background: var(--yellow); color: var(--navy); }
+    .price-card-btn {
+      display: block; margin-top: 1.5rem;
+      background: var(--blue); color: var(--white);
+      text-align: center; font-weight: 900; font-size: .95rem;
+      padding: .75rem; border-radius: 4px;
+      text-decoration: none; transition: background .15s;
+    }
+    .price-card-btn:hover { background: #1565c0; }
+    .price-card.featured .price-card-btn { background: var(--red); color: var(--white); }
+    .price-card.featured .price-card-btn:hover { background: var(--red2); }
+    .pricing-note {
+      max-width: 900px; margin: 1.8rem auto 0;
+      background: var(--navy); color: rgba(255,255,255,.75);
+      border-radius: 8px; padding: 1.2rem 1.8rem;
+      border-left: 4px solid var(--yellow);
+      font-size: .88rem;
+    }
+    .pricing-note strong { color: var(--yellow); }
+
+    /* ─── SPEAKER ─── */
+    .speaker-section {
+      background: var(--navy2);
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+    }
+    .speaker-section .section-title { color: var(--white); }
+    .speaker-section .section-label { color: rgba(255,232,0,.7); }
+    .speaker-card {
+      max-width: 900px; margin: 0 auto;
+      background: #0f2350; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px; overflow: hidden;
+      display: grid; grid-template-columns: 320px 1fr;
+    }
+    .speaker-photo-col {
+      background: var(--navy3);
+      position: relative; overflow: hidden;
+      min-height: 400px;
+    }
+    .speaker-photo-col img {
+      width: 100%; height: 100%; object-fit: cover;
+      object-position: top center;
+      filter: brightness(0.95) contrast(1.05);
+    }
+    .speaker-photo-fallback {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: linear-gradient(160deg, #162d60 0%, #0a1a3a 100%);
+      font-family: 'Noto Serif SC', serif;
+    }
+    .speaker-photo-fallback .initials { font-size: 6rem; font-weight: 900; color: var(--yellow); line-height: 1; }
+    .speaker-photo-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(10,26,58,.9));
+      padding: 1.5rem; text-align: center;
+    }
+    .speaker-name-overlay {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.3rem; font-weight: 900; color: var(--white);
+    }
+    .speaker-creds-overlay { font-size: .75rem; color: var(--yellow); font-weight: 600; margin-top: .2rem; }
+    .speaker-info-col { padding: 2.2rem 2rem; }
+    .speaker-day-badge {
+      display: inline-block;
+      background: var(--blue); color: var(--white);
+      font-size: .72rem; font-weight: 700; padding: .25rem .7rem;
+      border-radius: 3px; letter-spacing: .04em; margin-bottom: 1rem;
+    }
+    .speaker-bio { font-size: .9rem; color: rgba(248,249,255,.75); line-height: 1.8; margin-bottom: 1.4rem; }
+    .speaker-skills { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.4rem; }
+    .skill-tag {
+      background: rgba(21,101,192,.25); color: var(--sky);
+      font-size: .75rem; font-weight: 600;
+      padding: .23rem .65rem; border-radius: 3px;
+    }
+    .speaker-quals { border-top: 1px solid rgba(255,255,255,.1); padding-top: 1.2rem; }
+    .qual-item {
+      display: flex; align-items: center; gap: .6rem;
+      font-size: .87rem; color: rgba(248,249,255,.7); margin-bottom: .4rem;
+    }
+    .qual-item::before { content: '▶'; color: var(--yellow); font-size: .55rem; }
+
+    /* ─── AUDIENCE ─── */
+    .audience {
+      background: var(--white);
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+    }
+    .audience-grid {
+      max-width: 900px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem;
+    }
+    .audience-card {
+      background: var(--cream); border: 2px solid #d4e0ff;
+      border-radius: 8px; padding: 1.5rem 1.2rem;
+      text-align: center; transition: border-color .2s, transform .2s;
+    }
+    .audience-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .audience-icon { font-size: 2.2rem; margin-bottom: .7rem; }
+    .audience-title { font-weight: 700; font-size: .9rem; color: var(--text); line-height: 1.4; }
+    .no-code-banner {
+      max-width: 900px; margin: 1.5rem auto 0;
+      background: var(--navy); color: var(--white);
+      border-radius: 8px; padding: 1.4rem 1.8rem;
+      display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+      border-left: 5px solid var(--yellow);
+    }
+    .no-code-banner .icon { font-size: 2rem; flex-shrink: 0; }
+    .no-code-banner p { flex: 1; min-width: 200px; font-size: .92rem; color: rgba(255,255,255,.8); }
+    .no-code-banner strong { color: var(--yellow); }
+
+    /* ─── OUTLINE ─── */
+    .outline {
+      background: #f4f7ff;
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+    }
+    .outline-inner { max-width: 900px; margin: 0 auto; }
+    .day-tabs {
+      display: flex; border-radius: 6px; overflow: hidden;
+      border: 2px solid var(--blue); margin-bottom: 2rem; width: fit-content;
+    }
+    .day-tab {
+      padding: .7rem 2rem; font-weight: 700; font-size: .9rem;
+      cursor: pointer; border: none; background: var(--white); color: var(--blue);
+      font-family: 'Noto Sans SC', sans-serif; transition: background .15s, color .15s;
+    }
+    .day-tab.active { background: var(--navy); color: var(--white); }
+    .day-panel { display: none; }
+    .day-panel.active { display: block; }
+    .day-trainer {
+      display: flex; align-items: center; gap: .8rem;
+      background: var(--navy); color: var(--white);
+      padding: .9rem 1.2rem; border-radius: 6px; margin-bottom: 1.4rem;
+      font-size: .88rem;
+    }
+    .day-trainer .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--yellow); flex-shrink: 0; }
+    .day-trainer strong { color: var(--yellow); }
+    .tl-row {
+      display: grid; grid-template-columns: 130px 1fr;
+      gap: 1rem; padding: 1.1rem 0;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .tl-row:last-child { border-bottom: none; }
+    .tl-time { font-size: .8rem; font-weight: 700; color: var(--muted); padding-top: .1rem; }
+    .tl-break .tl-time, .tl-break .tl-head { color: var(--blue); }
+    .tl-head { font-weight: 700; font-size: .95rem; color: var(--text); margin-bottom: .4rem; }
+    .tl-ul { list-style: none; display: flex; flex-direction: column; gap: .3rem; }
+    .tl-ul li { font-size: .86rem; color: var(--muted); padding-left: 1.1rem; position: relative; }
+    .tl-ul li::before { content: '—'; position: absolute; left: 0; color: var(--sky); }
+
+    /* ─── GUARANTEE ─── */
+    .guarantee {
+      background: var(--navy);
+      padding: clamp(3rem, 5vw, 4.5rem) clamp(1rem, 5vw, 3rem);
+      border-top: 4px solid var(--yellow);
+    }
+    .guarantee-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+    .guarantee-badge { font-size: 4rem; margin-bottom: 1rem; }
+    .guarantee-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.5rem, 3vw, 2.4rem); font-weight: 900;
+      color: var(--white); margin-bottom: .8rem;
+    }
+    .guarantee-title .yellow { color: var(--yellow); }
+    .guarantee-desc { color: rgba(255,255,255,.7); font-size: .95rem; max-width: 600px; margin: 0 auto; }
+
+    /* ─── SOCIAL PROOF ─── */
+    .social {
+      background: var(--cream);
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+    }
+    .social-inner { max-width: 900px; margin: 0 auto; }
+    .fb-btn {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: #1877f2; color: var(--white);
+      font-weight: 700; font-size: .9rem; padding: .65rem 1.4rem;
+      border-radius: 6px; text-decoration: none;
+      margin-top: 1.5rem; transition: background .15s;
+    }
+    .fb-btn:hover { background: #166fe5; }
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem; margin-top: 2rem;
+    }
+    .testimonial {
+      background: var(--white); border: 1px solid #d4e0ff;
+      border-radius: 10px; padding: 1.6rem;
+    }
+    .testimonial-stars { color: var(--yellow); font-size: 1rem; margin-bottom: .8rem; }
+    .testimonial-text { font-size: .88rem; color: #4a5a80; line-height: 1.7; font-style: italic; margin-bottom: 1rem; }
+    .testimonial-text::before { content: '"'; font-size: 2rem; color: var(--sky); line-height: .5; display: block; margin-bottom: .4rem; }
+    .testimonial-author { font-weight: 700; font-size: .82rem; color: var(--text); }
+    .testimonial-role { font-size: .78rem; color: var(--muted); }
+
+    /* ─── FINAL CTA ─── */
+    .final-cta {
+      background: var(--blue);
+      padding: clamp(4rem, 8vw, 7rem) clamp(1rem, 5vw, 3rem);
+    }
+    .final-cta-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+    .final-cta-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.8rem, 4.5vw, 3.2rem); font-weight: 900;
+      color: var(--white); margin-bottom: 1rem; line-height: 1.25;
+    }
+    .final-cta-title .yellow { color: var(--yellow); }
+    .final-cta-sub { color: rgba(255,255,255,.8); margin-bottom: 2rem; font-size: 1rem; }
+    .final-cta-price {
+      background: rgba(0,0,0,.2); border-radius: 8px;
+      padding: 1.2rem 2rem; display: inline-block; margin-bottom: 2rem;
+    }
+    .final-cta-price .p-label { font-size: .78rem; color: rgba(255,255,255,.6); letter-spacing: .06em; }
+    .final-cta-price .p-amount {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 2.4rem; font-weight: 900; color: var(--yellow);
+    }
+    .final-cta-price .p-ori { font-size: .82rem; color: rgba(255,255,255,.4); text-decoration: line-through; }
+    .final-cta-btns { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+    .final-cta-note { color: rgba(255,255,255,.6); font-size: .82rem; margin-top: 1.2rem; }
+    .final-cta-note a { color: var(--yellow); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: #06101f; color: rgba(255,255,255,.45);
+      padding: 2.5rem clamp(1rem, 5vw, 3rem); font-size: .83rem;
+    }
+    .footer-inner { max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 1.2rem; justify-content: space-between; align-items: center; }
+    footer a { color: var(--sky); text-decoration: none; }
+    .footer-logo img { height: 32px; opacity: .7; }
+
+    /* ─── WHATSAPP FLOAT ─── */
+    .wa-fab {
+      position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 999;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: #25d366; display: grid; place-items: center;
+      text-decoration: none;
+      animation: waBounce .6s cubic-bezier(0.34, 1.56, 0.64, 1) 1s both,
+                 waPulse 2.4s ease-in-out 2s infinite;
+      transition: transform .2s;
+    }
+    @keyframes waBounce { from{opacity:0;transform:scale(.2)} to{opacity:1;transform:scale(1)} }
+    .wa-fab:hover { transform: scale(1.12); animation: none; box-shadow: 0 12px 36px rgba(37,211,102,.8); }
+    .wa-fab svg { width: 30px; height: 30px; fill: #fff; }
+    .wa-fab .wa-tip {
+      position: absolute; right: calc(100% + .8rem);
+      background: var(--navy); color: var(--white);
+      font-size: .78rem; font-weight: 600; padding: .4rem .8rem;
+      border-radius: 5px; white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .wa-fab .wa-tip::after { content:''; position:absolute; right:-.5rem; top:50%; transform:translateY(-50%); border:5px solid transparent; border-left-color:var(--navy); }
+    .wa-fab:hover .wa-tip { opacity: 1; }
+
+    /* ─── LANGUAGE TOGGLE ─── */
+    .lang-toggle { display: flex; align-items: center; gap: .4rem; margin-right: .6rem; }
+    .lang-btn {
+      background: none; border: 1px solid rgba(255,255,255,.25);
+      color: rgba(255,255,255,.5); font-size: .72rem; font-weight: 700;
+      padding: .25rem .6rem; border-radius: 3px; cursor: pointer;
+      font-family: 'Noto Sans SC', sans-serif; transition: all .15s;
+    }
+    .lang-btn.active { background: var(--yellow); border-color: var(--yellow); color: var(--navy); }
+    .lang-sep { color: rgba(255,255,255,.25); font-size: .75rem; }
+    .en { display: none !important; }
+    html[data-lang="en"] .zh { display: none !important; }
+    html[data-lang="en"] .en { display: inline !important; }
+    html[data-lang="en"] .en-block { display: block !important; }
+
+    /* ─── ENHANCED BUTTON ANIMATIONS ─── */
+    @keyframes waPulse {
+      0%,100% { box-shadow: 0 6px 24px rgba(37,211,102,.55), 0 0 0 0 rgba(37,211,102,.5); }
+      60%      { box-shadow: 0 6px 24px rgba(37,211,102,.55), 0 0 0 16px rgba(37,211,102,0); }
+    }
+    @keyframes solPulse {
+      0%,100% { box-shadow: 0 6px 24px rgba(255,232,0,.45), 0 0 0 0 rgba(255,232,0,.4); }
+      60%      { box-shadow: 0 8px 32px rgba(255,232,0,.65), 0 0 0 14px rgba(255,232,0,0); }
+    }
+    .solution-btn { animation: solPulse 2.2s ease-in-out 0.8s infinite; }
+    .solution-btn:hover { animation: none; transform: translateY(-3px); box-shadow: 0 12px 36px rgba(255,232,0,.8); }
+    @keyframes pricePulse {
+      0%,100% { box-shadow: 0 4px 16px rgba(229,57,53,.5), 0 0 0 0 rgba(229,57,53,.4); }
+      60%      { box-shadow: 0 4px 24px rgba(229,57,53,.8), 0 0 0 10px rgba(229,57,53,0); }
+    }
+    .price-card.featured .price-card-btn { animation: pricePulse 2s ease-in-out 1.2s infinite; }
+    @keyframes waBtnPulse {
+      0%,100% { box-shadow: 0 6px 20px rgba(37,211,102,.4), 0 0 0 0 rgba(37,211,102,.4); }
+      60%      { box-shadow: 0 6px 28px rgba(37,211,102,.6), 0 0 0 12px rgba(37,211,102,0); }
+    }
+    .btn-wa {
+      background: #25d366; color: #fff;
+      font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 1.1rem;
+      padding: .95rem 2.8rem; border-radius: 4px;
+      text-decoration: none; display: inline-flex; align-items: center; gap: .5rem;
+      animation: waBtnPulse 2.3s ease-in-out 1.5s infinite;
+      transition: background .15s, transform .12s;
+    }
+    .btn-wa:hover { background: #1da851; transform: translateY(-2px); animation: none; box-shadow: 0 10px 32px rgba(37,211,102,.7); }
+    .ripple-btn { position: relative; overflow: hidden; }
+    .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,.3); transform: scale(0); animation: rippleAnim .55s linear; pointer-events: none; }
+    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    /* ─── REMAINING SEATS WIDGET ─── */
+    .seats-widget {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      align-items: center; margin-bottom: 2.5rem;
+    }
+    .seats-label {
+      color: var(--yellow); font-size: .8rem; font-weight: 900;
+      letter-spacing: .08em; text-transform: uppercase;
+      background: rgba(255,232,0,.12); border: 1px solid rgba(255,232,0,.4);
+      padding: .35rem .9rem; border-radius: 3px;
+      animation: seatGlow 1.8s ease-in-out infinite;
+    }
+    @keyframes seatGlow { 0%,100%{box-shadow:0 0 0 0 rgba(255,232,0,.4)} 50%{box-shadow:0 0 0 8px rgba(255,232,0,0)} }
+    .seats-display { display: flex; align-items: center; gap: 1rem; }
+    .seats-bar { display: flex; align-items: baseline; gap: .3rem; }
+    .seats-num {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 3.8rem; font-weight: 900; color: var(--red);
+      line-height: 1; min-width: 3.2rem; text-align: center;
+      transition: color .3s, transform .3s;
+    }
+    .seats-unit { font-size: 1rem; color: var(--white); font-weight: 700; }
+    .seats-detail { display: flex; flex-direction: column; gap: .15rem; }
+    .seats-sub { font-size: .78rem; color: var(--muted); }
+    .seats-progress {
+      width: 120px; height: 5px; background: rgba(255,255,255,.12);
+      border-radius: 3px; overflow: hidden;
+    }
+    .seats-progress-bar {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--red), #ff6b6b);
+      transition: width .8s ease;
+    }
+
+    /* ─── BUTTON ANIMATIONS ─── */
+    @keyframes btnPulse {
+      0%,100% { box-shadow: 0 6px 24px rgba(229,57,53,.55), 0 0 0 0 rgba(229,57,53,.5); }
+      60%      { box-shadow: 0 8px 32px rgba(229,57,53,.8), 0 0 0 14px rgba(229,57,53,0); }
+    }
+    @keyframes btnWiggle {
+      0%,100% { transform: translateY(-2px) rotate(0deg); }
+      25%      { transform: translateY(-4px) rotate(-1deg); }
+      75%      { transform: translateY(-4px) rotate(1deg); }
+    }
+    @keyframes yellowPulse {
+      0%,100% { box-shadow: 0 6px 20px rgba(255,232,0,.4), 0 0 0 0 rgba(255,232,0,.45); }
+      60%      { box-shadow: 0 8px 28px rgba(255,232,0,.65), 0 0 0 12px rgba(255,232,0,0); }
+    }
+    .btn-hero { animation: btnPulse 2.2s ease-in-out infinite; }
+    .btn-hero:hover { background: var(--red2); animation: btnWiggle .4s ease infinite; box-shadow: 0 12px 36px rgba(229,57,53,.75); }
+    .btn-cta-yellow { animation: yellowPulse 2.5s ease-in-out 0.5s infinite; }
+    .btn-cta-yellow:hover { animation: none; transform: translateY(-3px); box-shadow: 0 12px 32px rgba(255,232,0,.7); }
+
+    /* ─── TWO-SPEAKER LAYOUT ─── */
+    .speakers-grid {
+      max-width: 1020px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 1.5rem;
+    }
+    .speaker-card-v2 {
+      background: #0f2350; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px; overflow: hidden;
+      display: grid; grid-template-columns: 200px 1fr;
+    }
+    .speaker-photo-col-sm {
+      background: var(--navy3); position: relative; overflow: hidden;
+      min-height: 300px;
+    }
+    .speaker-photo-col-sm img {
+      width: 100%; height: 100%; object-fit: cover;
+      object-position: top center;
+      filter: brightness(0.95) contrast(1.05);
+    }
+    .speaker-photo-fallback-sm {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(160deg, #162d60 0%, #0a1a3a 100%);
+      font-family: 'Noto Serif SC', serif;
+    }
+    .speaker-photo-fallback-sm .initials { font-size: 4rem; font-weight: 900; color: var(--yellow); }
+    .speaker-photo-overlay-sm {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(10,26,58,.92));
+      padding: 1rem .9rem; text-align: center;
+    }
+    .speaker-name-sm { font-family: 'Noto Serif SC', serif; font-size: 1.05rem; font-weight: 900; color: var(--white); }
+    .speaker-creds-sm { font-size: .65rem; color: var(--yellow); font-weight: 600; margin-top: .15rem; line-height: 1.4; }
+    .speaker-info-sm { padding: 1.5rem 1.3rem; }
+    .speaker-day-badge-sm {
+      display: inline-block;
+      background: var(--blue); color: var(--white);
+      font-size: .68rem; font-weight: 700; padding: .2rem .65rem;
+      border-radius: 3px; letter-spacing: .04em; margin-bottom: .8rem;
+    }
+    .speaker-bio-sm { font-size: .84rem; color: rgba(248,249,255,.75); line-height: 1.75; margin-bottom: .9rem; }
+    .speaker-skills-sm { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .9rem; }
+    .speaker-quals-sm { border-top: 1px solid rgba(255,255,255,.1); padding-top: .8rem; }
+    .qual-item-sm {
+      display: flex; align-items: flex-start; gap: .45rem;
+      font-size: .78rem; color: rgba(248,249,255,.65); margin-bottom: .3rem;
+    }
+    .qual-item-sm::before { content: '▶'; color: var(--yellow); font-size: .48rem; flex-shrink: 0; margin-top: .35rem; }
+
+    /* ─── MOBILE RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .speakers-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .speaker-card { grid-template-columns: 1fr; }
+      .speaker-card-v2 { grid-template-columns: 1fr; }
+      .speaker-photo-col { min-height: 260px; }
+      .speaker-photo-col-sm { min-height: 220px; max-height: 280px; }
+      .tl-row { grid-template-columns: 1fr; gap: .2rem; }
+      .tl-time { font-size: .75rem; }
+      .day-tabs { width: 100%; }
+      .day-tab { flex: 1; text-align: center; padding: .65rem .4rem; font-size: .78rem; }
+      .benefits-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .hero-btns { flex-direction: column; }
+      .hero-btns a { text-align: center; }
+      .final-cta-btns { flex-direction: column; }
+      .final-cta-btns a { text-align: center; }
+      .nav-logo-text { display: none; }
+      .pain-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .hero-price { flex-direction: column; gap: .5rem; }
+      .hero-meta { flex-direction: column; }
+      .seats-widget { gap: .6rem; }
+      .seats-num { font-size: 3rem; }
+      .c-unit { min-width: 48px; }
+    }
+
+    /* ─── FAQ ─── */
+    .faq {
+      background: var(--white);
+      padding: clamp(3.5rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+      border-top: 3px solid var(--blue);
+    }
+    .faq-inner { max-width: 860px; margin: 0 auto; }
+    .faq-grid { display: flex; flex-direction: column; gap: .65rem; }
+    .faq-item {
+      border: 1.5px solid #e3ecff; border-radius: 8px;
+      overflow: hidden; background: var(--white);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .faq-item[open] {
+      border-color: var(--blue);
+      box-shadow: 0 4px 20px rgba(21,101,192,.1);
+    }
+    .faq-q {
+      display: flex; align-items: center; gap: .85rem;
+      padding: 1rem 1.3rem; cursor: pointer; list-style: none;
+      font-weight: 700; font-size: .95rem; color: var(--text);
+      user-select: none; transition: background .15s;
+    }
+    .faq-q:hover { background: #f4f8ff; }
+    .faq-q::-webkit-details-marker { display: none; }
+    .faq-qnum {
+      background: var(--navy); color: var(--yellow);
+      font-family: 'Noto Serif SC', serif;
+      font-size: .72rem; font-weight: 900;
+      padding: .2rem .55rem; border-radius: 3px;
+      flex-shrink: 0; letter-spacing: .04em;
+    }
+    .faq-qtxt { flex: 1; }
+    .faq-arrow {
+      color: var(--blue); font-size: .65rem; flex-shrink: 0;
+      transition: transform .25s ease;
+    }
+    .faq-item[open] .faq-arrow { transform: rotate(180deg); }
+    .faq-a {
+      padding: .9rem 1.3rem 1.2rem calc(1.3rem + 2.3rem);
+      border-top: 1px solid #e3ecff;
+      color: #4a5a80; font-size: .9rem; line-height: 1.8;
+    }
+    .faq-a ul { padding-left: 1.1rem; margin: .4rem 0 0; }
+    .faq-a ul li { margin-bottom: .4rem; }
+    .faq-a p { margin: 0 0 .5rem; }
+    .faq-a p:last-child { margin-bottom: 0; }
+    @media (max-width: 600px) {
+      .faq-a { padding-left: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <img src="logo.png" alt="Wanconnect" onerror="this.style.display='none'" />
+    <span class="nav-logo-text">Wanconnect Consulting Group</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:.6rem">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('zh')" id="btn-zh">中文</button>
+      <span class="lang-sep">|</span>
+      <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+    </div>
+    <a class="nav-cta ripple-btn" href="https://buy.o.my/wanconnectaiaccount202610509" target="_blank">
+      <span class="zh">🔥 立即报名 (Non-HRDC)</span><span class="en">🔥 Register Now (Non-HRDC)</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-lines"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow zh">
+      <span></span>
+      HRDC CLAIMABLE · 马来西亚企业合格申报 · 零费用学习
+    </div>
+    <div class="hero-eyebrow en">
+      <span></span>
+      HRDC CLAIMABLE · Claimable by Malaysian Companies · Learn at Zero Cost
+    </div>
+
+    <h1 class="hero-title">
+      <span class="zh">让<span class="yellow">会计、人事、行政</span><br>
+        <span style="font-size:.6em;font-weight:700;color:rgba(255,232,0,.55);letter-spacing:.06em;display:inline-block;margin:.1em 0">— 两天课程 —</span><br>
+        工作流程<span class="sky">全面自动化</span>
+      </span>
+      <span class="en">Automate Your<br>
+        <span class="yellow">Accounting, HR &amp; Admin</span><br>
+        <span style="font-size:.6em;font-weight:700;color:rgba(255,232,0,.55);letter-spacing:.06em;display:inline-block;margin:.1em 0">— 2-Day Beginner Course —</span><br>
+        <span class="sky">Workflows</span>
+      </span>
+    </h1>
+
+    <p class="hero-sub">
+      <span class="zh">使用 <strong>n8n</strong> 无代码平台，亲手搭建 <strong>5套企业必备自动化流程</strong>，<br>彻底解放你每天重复劳动的双手。</span>
+      <span class="en">Using the <strong>n8n</strong> no-code platform, build <strong>5 must-have automation workflows</strong><br>and permanently free yourself from repetitive daily tasks.</span>
+    </p>
+
+    <div class="hero-meta">
+      <div class="meta-pill"><span class="icon">📅</span>
+        <div class="date-batch">
+          <div class="date-row">
+            <span class="zh">第一批：</span><span class="en">Batch 1:</span>
+            <strong>25–26 Apr 2026</strong>
+            <span class="zh">（周六 &amp; 周日）</span><span class="en">(Sat &amp; Sun)</span>
+            <span class="badge-soldout">✓ <span class="zh">4小时售罄</span><span class="en">Sold Out in 4 hrs</span></span>
+          </div>
+          <div class="date-row">
+            <span class="zh">第二批：</span><span class="en">Batch 2:</span>
+            <strong>16–17 May 2026</strong>
+            <span class="zh">（周六 &amp; 周日）</span><span class="en">(Sat &amp; Sun)</span>
+            <span class="badge-selling">🔥 <span class="zh">快速售出 · 立即行动！</span><span class="en">Selling Fast — Act Now!</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="meta-pill"><span class="icon">⏰</span><div><span class="zh">时间：上午 9:30 — 下午 5:30</span><span class="en">Time: 9:30am – 5:30pm</span></div></div>
+      <div class="meta-pill"><span class="icon">📍</span><div><span class="zh">地点：<strong>WORQ 9楼, Integra Tower, 吉隆坡</strong></span><span class="en">Venue: <strong>WORQ Level 9, Integra Tower, 348 Jln Tun Razak, KL 50400</strong></span></div></div>
+      <div class="meta-pill"><span class="icon">👥</span><div><span class="zh"><strong>限额 30 人</strong>小班制</span><span class="en"><strong>Max 30 Pax</strong> · Small Class</span></div></div>
+    </div>
+
+    <div class="hero-urgency zh">名额快满！30人小班，先报先得。错过此次，不知下次何时再办。</div>
+    <div class="hero-urgency en">Seats filling fast! Class of 30 — first come, first served. Next run date unknown.</div>
+
+    <div class="seats-widget">
+      <div class="seats-label">🔥 <span class="zh">剩余名额</span><span class="en">Seats Left</span></div>
+      <div class="seats-display">
+        <div class="seats-bar">
+          <span class="seats-num" id="seats-count">7</span>
+          <span class="seats-unit"><span class="zh">个座位</span><span class="en">seats</span></span>
+        </div>
+        <div class="seats-detail">
+          <div class="seats-sub"><span class="zh">30人小班 · 名额有限</span><span class="en">Class of 30 · Limited Availability</span></div>
+          <div class="seats-progress"><div class="seats-progress-bar" id="seats-bar"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-btns">
+      <a class="btn-hero ripple-btn" href="https://buy.o.my/wanconnectaiaccount202610509" target="_blank">
+        <span class="zh">🔥 立即报名锁位 (Non-HRDC)</span><span class="en">🔥 Register Now (Non-HRDC) — Reserve My Seat</span>
+      </a>
+      <a class="btn-outline" href="#outline">
+        <span class="zh">查看课程大纲</span><span class="en">View Course Outline</span>
+      </a>
+    </div>
+
+    <div class="hero-price">
+      <div>
+        <div class="price-from"><span class="zh">HRDC 申报价（企业全额报销）</span><span class="en">HRDC Claimable Price (Full Company Reimbursement)</span></div>
+        <div class="price-big"><span>RM</span> 2,499</div>
+        <div class="price-strike"><span class="zh">原价 RM3,699</span><span class="en">Was RM3,699</span></div>
+      </div>
+      <div>
+        <div class="price-from"><span class="zh">非 HRDC 个人价</span><span class="en">Non-HRDC Personal Price</span></div>
+        <div class="price-big" style="font-size:1.6rem"><span>RM</span> 2,199</div>
+      </div>
+      <div class="price-hrdc">HRDC<br>Claimable</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAIN POINTS ═══ -->
+<section class="pain">
+  <div class="pain-inner">
+    <h2 class="pain-head">
+      <span class="zh">你是否每天都在做<span class="yellow">这些重复的事</span>？</span>
+      <span class="en">Stuck Doing These <span class="yellow">Repetitive Tasks</span> Every Day?</span>
+    </h2>
+    <p class="pain-desc">
+      <span class="zh">如果你有以下任何一种烦恼，这堂课就是为你而设</span>
+      <span class="en">If any of these sound familiar, this course is made for you</span>
+    </p>
+    <div class="pain-grid">
+      <div class="pain-item"><div class="pain-x">😩</div><div class="pain-text"><span class="zh"><strong>手动整理数据</strong>，每次都要花几个小时复制粘贴到 Excel</span><span class="en"><strong>Manually sorting data</strong> — copying and pasting into Excel for hours every single time</span></div></div>
+      <div class="pain-item"><div class="pain-x">😩</div><div class="pain-text"><span class="zh">重复发送<strong>一样的邮件/通知</strong>，浪费大量时间</span><span class="en">Sending the <strong>same emails/notifications</strong> over and over — a colossal waste of time</span></div></div>
+      <div class="pain-item"><div class="pain-x">😩</div><div class="pain-text"><span class="zh"><strong>跟进发票、申请表</strong>总是漏掉，靠人工记忆出错率高</span><span class="en"><strong>Invoice and form follow-ups</strong> keep falling through the cracks — relying on memory leads to costly errors</span></div></div>
+      <div class="pain-item"><div class="pain-x">😩</div><div class="pain-text"><span class="zh">HR 流程<strong>全靠人手一步步审批</strong>，效率极低</span><span class="en">HR processes <strong>depend entirely on manual step-by-step approvals</strong> — painfully slow and inefficient</span></div></div>
+      <div class="pain-item"><div class="pain-x">😩</div><div class="pain-text"><span class="zh">想用 AI，但<strong>不知道从哪里开始</strong>，怕太复杂学不会</span><span class="en">Want to use AI but <strong>have no idea where to begin</strong> — worried it's too technical to learn</span></div></div>
+      <div class="pain-item"><div class="pain-x">😩</div><div class="pain-text"><span class="zh">看别人的公司已经开始自动化，<strong>自己还停留在原地</strong></span><span class="en">Watching other companies embrace automation while <strong>you're still stuck doing everything the old way</strong></span></div></div>
+    </div>
+    <div class="pain-arrow">⬇</div>
+  </div>
+</section>
+
+<!-- ═══ SOLUTION ═══ -->
+<section class="solution">
+  <div class="solution-inner">
+    <h2 class="solution-title">
+      <span class="zh">两天课程，彻底改变你的<span class="yellow">工作方式</span></span>
+      <span class="en">2 Days to Transform the Way You <span class="yellow">Work</span></span>
+    </h2>
+    <p class="solution-desc">
+      <span class="zh">这堂课用 <strong style="color:#fff">n8n 无代码自动化平台</strong>，把你每天的重复性工作变成系统自动运行。<br>你只需上一次课，系统帮你无限重复执行。</span>
+      <span class="en">This course uses the <strong style="color:#fff">n8n no-code automation platform</strong> to turn your daily repetitive work into automated systems.<br>Learn once — your systems run forever.</span>
+    </p>
+    <a class="solution-btn ripple-btn" href="https://buy.o.my/wanconnectaiaccount202610509" target="_blank">
+      <span class="zh">我要解放双手 → 立即报名 (Non-HRDC)</span>
+      <span class="en">Free My Time → Register Now (Non-HRDC)</span>
+    </a>
+  </div>
+</section>
+
+<!-- ═══ 6 BENEFITS ═══ -->
+<section class="benefits">
+  <div class="section-label"><span class="zh">参加理由</span><span class="en">Why Attend</span></div>
+  <h2 class="section-title">
+    <span class="zh">6 大理由，让你<span class="red">必须</span>来上这堂课</span>
+    <span class="en">6 Reasons You <span class="red">Can't Miss</span> This Course</span>
+  </h2>
+  <div class="benefits-grid">
+
+    <div class="benefit-card">
+      <div class="benefit-num">01</div>
+      <span class="benefit-icon">🚀</span>
+      <div class="benefit-title"><span class="zh">小白必备入门课，轻松学会运用</span><span class="en">Beginner-Friendly — No Coding Needed</span></div>
+      <div class="benefit-desc"><span class="zh">从零开始，不需要任何编程基础。30% 概念 + 70% 实操，手把手带你成功搭建第一个自动化工作流。</span><span class="en">Start from zero — no programming background required. 30% theory + 70% hands-on practice, guided step by step until your first automation workflow is live.</span></div>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-num">02</div>
+      <span class="benefit-icon">🎯</span>
+      <div class="benefit-title"><span class="zh">Guarantee 你学会 5 套企业必备自动化流程</span><span class="en">Guaranteed: 5 Ready-to-Use Automation Workflows</span></div>
+      <div class="benefit-desc"><span class="zh">课程内亲手搭建 6 个真实场景案例，保证你带回 5 套可即用于工作的自动化模板。学不会，无条件重修。</span><span class="en">Build 6 real-world case automations in class. Guaranteed to leave with 5 templates ready for immediate use at work. Can't do it? Free repeat attendance — no questions asked.</span></div>
+      <span class="benefit-tag"><span class="zh">保证学会</span><span class="en">Guaranteed</span></span>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-num">03</div>
+      <span class="benefit-icon">📱</span>
+      <div class="benefit-title"><span class="zh">45 天课后 WhatsApp 全程支援</span><span class="en">45-Day Post-Course WhatsApp Support</span></div>
+      <div class="benefit-desc"><span class="zh">下课了不代表结束！多位导师在线，45 天内随时解答你的实操问题，确保你回去之后也能顺利落地执行。</span><span class="en">Learning doesn't stop in the classroom! Multiple trainers available online — get answers to your implementation questions anytime for 45 days after class.</span></div>
+      <span class="benefit-tag"><span class="zh">45天支援</span><span class="en">45-Day Support</span></span>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-num">04</div>
+      <span class="benefit-icon">🤖</span>
+      <div class="benefit-title"><span class="zh">免费附赠 Google NotebookLM 入门教程</span><span class="en">FREE Google NotebookLM Tutorial Included</span></div>
+      <div class="benefit-desc"><span class="zh">额外赠送 Google NotebookLM AI 工具教程，让你在自动化之外还能掌握 AI 辅助研究与文件分析技能。</span><span class="en">Bonus Google NotebookLM AI tool tutorial included — master AI-assisted research and document analysis on top of your automation skills.</span></div>
+      <span class="benefit-tag blue-tag"><span class="zh">免费赠送</span><span class="en">Free Bonus</span></span>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-num">05</div>
+      <span class="benefit-icon">👨‍💻</span>
+      <div class="benefit-title"><span class="zh">30 人小班制，实操教学真学真会</span><span class="en">Small Class of 30 — Real Hands-On Learning</span></div>
+      <div class="benefit-desc"><span class="zh">严格限制人数，确保每位学员获得充分关注与指导。自带笔电，当场动手搭建，亲眼看到成果才算数。</span><span class="en">Strictly capped at 30 to ensure every participant gets full attention and guidance. Bring your laptop — you build live in class, and you only succeed when you see it running.</span></div>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-num">06</div>
+      <span class="benefit-icon">💰</span>
+      <div class="benefit-title"><span class="zh">HRDC Claimable — 实质零费用学习</span><span class="en">HRDC Claimable — Effectively Zero Cost</span></div>
+      <div class="benefit-desc"><span class="zh">公司可向 HRD Corp 全额申报！等同零费用接受专业 AI 培训。这可能是你今年<strong>投资回报最高</strong>的一堂课。</span><span class="en">Your company can claim the full fee via HRD Corp — professional AI training at effectively zero cost. Possibly the <strong>highest-ROI</strong> course investment you'll make this year.</span></div>
+      <span class="benefit-tag"><span class="zh">企业全额申报</span><span class="en">Fully Claimable</span></span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ MID CTA ═══ -->
+<section class="mid-cta">
+  <div class="mid-cta-inner">
+    <h2 class="mid-cta-title">
+      <span class="zh">现在报名，<span class="yellow">锁定你的座位</span></span>
+      <span class="en">Register Now — <span class="yellow">Lock In Your Seat</span></span>
+    </h2>
+    <p class="mid-cta-sub">
+      <span class="zh">30人小班 · 第一批 4月25–26日（已售罄）· 第二批 5月9–10日 · 吉隆坡 · HRDC可申报</span>
+      <span class="en">Class of 30 · Batch 1: 25–26 Apr (Sold Out) · Batch 2: 9–10 May · Kuala Lumpur · HRDC Claimable</span>
+    </p>
+    <a class="btn-cta-yellow ripple-btn" href="https://buy.o.my/wanconnectaiaccount202610509" target="_blank">
+      <span class="zh">立即报名 (Non-HRDC) → 名额快满</span>
+      <span class="en">Register Now (Non-HRDC) → Seats Almost Full</span>
+    </a>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section class="pricing" id="pricing">
+  <div class="section-label"><span class="zh">透明收费</span><span class="en">Transparent Pricing</span></div>
+  <h2 class="section-title">
+    <span class="zh">选择适合你的<span class="blue">报名方式</span></span>
+    <span class="en">Choose Your <span class="blue">Registration Type</span></span>
+  </h2>
+  <div class="pricing-grid">
+
+    <div class="price-card featured">
+      <div class="featured-badge">🔥 <span class="zh">最受欢迎 · HRDC企业首选</span><span class="en">Most Popular · Best for Companies</span></div>
+      <div class="price-type"><span class="zh">HRDC 申报价</span><span class="en">HRDC Claimable Price</span></div>
+      <div class="price-amount"><sub>RM</sub> 2,499</div>
+      <div class="price-duration"><span class="zh">每人 · 两天课程</span><span class="en">per person · 2-day course</span></div>
+      <div class="price-ori"><span class="zh">原价 RM3,699（省 RM1,200）</span><span class="en">Was RM3,699 (Save RM1,200)</span></div>
+      <ul class="price-features">
+        <li><span class="zh">公司可向 HRD Corp 全额申报</span><span class="en">Fully claimable via HRD Corp</span></li>
+        <li><span class="zh">等同企业零成本培训</span><span class="en">Zero cost training for company</span></li>
+        <li><span class="zh">45 天课后 WhatsApp 支援</span><span class="en">45-day post-course WhatsApp support</span></li>
+        <li><span class="zh">5 套即用自动化流程模板</span><span class="en">5 ready-to-use automation templates</span></li>
+        <li><span class="zh">Google NotebookLM 教程</span><span class="en">Google NotebookLM tutorial</span></li>
+        <li><span class="zh">完整两天实操课程</span><span class="en">Full 2-day hands-on course</span></li>
+      </ul>
+      <a class="price-card-btn ripple-btn" href="https://forms.gle/Pb1oRSXB6KouNBjq8" target="_blank">
+        🔥 <span class="zh">HRDC 报名</span><span class="en">HRDC Register</span>
+      </a>
+    </div>
+
+    <div class="price-card">
+      <div class="price-type"><span class="zh">非 HRDC 个人价</span><span class="en">Non-HRDC Personal Price</span></div>
+      <div class="price-amount"><sub>RM</sub> 2,199</div>
+      <div class="price-duration"><span class="zh">每人 · 两天课程</span><span class="en">per person · 2-day course</span></div>
+      <div class="price-ori"><span class="zh">原价 RM3,699</span><span class="en">Was RM3,699</span></div>
+      <ul class="price-features">
+        <li><span class="zh">个人自费报名</span><span class="en">Self-funded registration</span></li>
+        <li><span class="zh">45 天课后 WhatsApp 支援</span><span class="en">45-day post-course WhatsApp support</span></li>
+        <li><span class="zh">5 套即用自动化流程模板</span><span class="en">5 ready-to-use automation templates</span></li>
+        <li><span class="zh">Google NotebookLM 教程</span><span class="en">Google NotebookLM tutorial</span></li>
+        <li><span class="zh">完整两天实操课程</span><span class="en">Full 2-day hands-on course</span></li>
+      </ul>
+      <a class="price-card-btn ripple-btn" href="https://buy.o.my/wanconnectaiaccount202610509" target="_blank">
+        <span class="zh">个人报名 (Non-HRDC)</span><span class="en">Personal Register (Non-HRDC)</span>
+      </a>
+    </div>
+
+    <div class="price-card">
+      <div class="price-type"><span class="zh">原价</span><span class="en">Standard Price</span></div>
+      <div class="price-amount"><sub>RM</sub> 3,699</div>
+      <div class="price-duration"><span class="zh">每人 · 两天课程</span><span class="en">per person · 2-day course</span></div>
+      <ul class="price-features">
+        <li><span class="zh">45 天课后 WhatsApp 支援</span><span class="en">45-day post-course WhatsApp support</span></li>
+        <li><span class="zh">5 套即用自动化流程模板</span><span class="en">5 ready-to-use automation templates</span></li>
+        <li><span class="zh">Google NotebookLM 教程</span><span class="en">Google NotebookLM tutorial</span></li>
+        <li><span class="zh">完整两天实操课程</span><span class="en">Full 2-day hands-on course</span></li>
+      </ul>
+      <a class="price-card-btn ripple-btn" href="https://buy.o.my/wanconnectaiaccount202610509" target="_blank">
+        <span class="zh">原价报名 (Non-HRDC)</span><span class="en">Full Price Register (Non-HRDC)</span>
+      </a>
+    </div>
+
+  </div>
+  <div class="pricing-note">
+    <span class="zh">💡 <strong>HRDC 申报提示：</strong>如贵公司已缴付 HRD Corp 税款，即可为员工申请培训津贴，全额或部分报销费用，等同于公司<strong>零成本</strong>让员工接受顶尖 AI 技能培训。请在报名前向公司 HR 查询申报资格。</span>
+    <span class="en">💡 <strong>HRDC Claim Tip:</strong> If your company pays HRD Corp levies, you may apply for a training grant — fully or partially reimbursed — making this effectively <strong>zero-cost</strong> professional AI training for your staff. Check with your company HR for eligibility before registering.</span>
+  </div>
+</section>
+
+<!-- ═══ SPEAKERS ═══ -->
+<section class="speaker-section" id="speaker">
+  <div class="section-label" style="color:rgba(255,232,0,.7)"><span class="zh">主讲导师</span><span class="en">Meet the Trainers</span></div>
+  <h2 class="section-title" style="color:#fff;margin-bottom:2.5rem"><span class="zh">两位<span style="color:var(--yellow)">资深导师</span>，两天实操教学</span><span class="en">Two <span style="color:var(--yellow)">Expert Trainers</span>, Two Days of Hands-On</span></h2>
+
+  <div class="speakers-grid">
+
+    <!-- SPEAKER 1: Yap Wan Ching (Day 1) -->
+    <div class="speaker-card-v2">
+      <div class="speaker-photo-col-sm">
+        <img src="speaker-ywc.jpg" alt="叶婉贞 Yap Wan Ching"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="speaker-photo-fallback-sm" style="display:none">
+          <div class="initials">叶</div>
+        </div>
+        <div class="speaker-photo-overlay-sm">
+          <div class="speaker-name-sm">叶婉贞</div>
+          <div class="speaker-creds-sm">Yap Wan Ching<br>CA(M) · FCCA · ICSA · ACTIM · ASEAN CPA</div>
+        </div>
+      </div>
+      <div class="speaker-info-sm">
+        <span class="speaker-day-badge-sm"><span class="zh">主讲第一天</span><span class="en">Presenting Day 1</span></span>
+        <div class="speaker-bio-sm">
+          <span class="zh">叶婉贞女士是 Wanconnect Management Service PLT 联合创始人及执行合伙人，在会计、审计及企业管治领域拥有超过 <strong style="color:var(--sky)">20 年</strong>丰富经验。
+          <br><br>
+          她是马来西亚特许会计师 CA(M)、FCCA、ICSA 及东盟注册会计师（ASEAN CPA），同时为 HRD Corp 核准培训师。擅长以深入浅出的方式讲解 AI 及自动化概念，专注帮助会计与行政专业人士掌握数字化转型技能。</span>
+          <span class="en">Ms. Yap Wan Ching is Co-Founder and Managing Partner of Wanconnect Management Service PLT, with over <strong style="color:var(--sky)">20 years</strong> of experience in accounting, audit, and corporate governance.
+          <br><br>
+          She holds CA(M), FCCA, ICSA, ACTIM, and ASEAN CPA designations, and is an HRD Corp Approved Trainer. She specialises in making AI and automation concepts accessible, helping accounting and admin professionals master digital transformation skills.</span>
+        </div>
+        <div class="speaker-skills-sm">
+          <span class="skill-tag"><span class="zh">AI 概念入门</span><span class="en">AI Fundamentals</span></span>
+          <span class="skill-tag"><span class="zh">PDPA 数据合规</span><span class="en">PDPA Compliance</span></span>
+          <span class="skill-tag">n8n <span class="zh">基础</span><span class="en">Basics</span></span>
+          <span class="skill-tag"><span class="zh">企业数字化</span><span class="en">Digital Transformation</span></span>
+        </div>
+        <div class="speaker-quals-sm">
+          <div class="qual-item-sm"><span class="zh">特许会计师 CA(M) — 马来西亚会计师公会</span><span class="en">Chartered Accountant CA(M) — MIA</span></div>
+          <div class="qual-item-sm"><span class="zh">FCCA — ACCA 资深会员</span><span class="en">FCCA — Fellow Member, ACCA</span></div>
+          <div class="qual-item-sm"><span class="zh">ICSA — 特许秘书及行政师</span><span class="en">ICSA — Chartered Secretary &amp; Administrator</span></div>
+          <div class="qual-item-sm"><span class="zh">ACTIM — 马来西亚税务学会会员</span><span class="en">ACTIM — Member, Tax Institute of Malaysia</span></div>
+          <div class="qual-item-sm"><span class="zh">东盟注册会计师 ASEAN CPA</span><span class="en">ASEAN CPA — ASEAN Chartered Accountant</span></div>
+          <div class="qual-item-sm"><span class="zh">HRD Corp 核准培训师</span><span class="en">HRD Corp Approved Trainer</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPEAKER 2: Liew Chee Keong (Day 2) -->
+    <div class="speaker-card-v2">
+      <div class="speaker-photo-col-sm">
+        <img src="speaker-lck.jpg" alt="廖志强 Liew Chee Keong"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="speaker-photo-fallback-sm" style="display:none">
+          <div class="initials">廖</div>
+        </div>
+        <div class="speaker-photo-overlay-sm">
+          <div class="speaker-name-sm">廖志强</div>
+          <div class="speaker-creds-sm">Liew Chee Keong<br>CA(M) · FCCA · ACTIM · ASEAN CPA</div>
+        </div>
+      </div>
+      <div class="speaker-info-sm">
+        <span class="speaker-day-badge-sm"><span class="zh">主讲第二天</span><span class="en">Presenting Day 2</span></span>
+        <div class="speaker-bio-sm">
+          <span class="zh">廖志强先生是 Wanconnect Management Service PLT 联合创始人，马来西亚公司法 2016 核准审计师、马来西亚会计师公会注册特许会计师 CA(M) 及东盟注册会计师 ASEAN CPA。
+          <br><br>
+          拥有逾 <strong style="color:var(--sky)">20 年</strong>审计、IPO/RTO 实战经验。完成 UCAN Technologies AI 自动化培训，深度掌握 n8n、AI 分析及自动化技术，能用会计人听懂的语言教 AI。</span>
+          <span class="en">Mr. Liew Chee Keong is Co-Founder of Wanconnect Management Service PLT, an Approved Company Auditor under the Companies Act 2016, Chartered Accountant CA(M), and ASEAN CPA.
+          <br><br>
+          With over <strong style="color:var(--sky)">20 years</strong> of audit and IPO/RTO experience, he completed UCAN Technologies AI Automation training and has deep expertise in n8n, AI analytics, and automation — teaching AI in language accountants can actually understand.</span>
+        </div>
+        <div class="speaker-skills-sm">
+          <span class="skill-tag">n8n <span class="zh">自动化</span><span class="en">Automation</span></span>
+          <span class="skill-tag">Claude AI</span>
+          <span class="skill-tag">ChatGPT</span>
+          <span class="skill-tag">NotebookLM</span>
+          <span class="skill-tag">AI <span class="zh">工作流</span><span class="en">Workflows</span></span>
+        </div>
+        <div class="speaker-quals-sm">
+          <div class="qual-item-sm"><span class="zh">核准公司审计师（Companies Act 2016）</span><span class="en">Approved Company Auditor (Companies Act 2016)</span></div>
+          <div class="qual-item-sm"><span class="zh">特许会计师 CA(M) — 马来西亚会计师公会</span><span class="en">Chartered Accountant CA(M) — MIA</span></div>
+          <div class="qual-item-sm"><span class="zh">FCCA — ACCA 资深会员</span><span class="en">FCCA — Fellow Member, ACCA</span></div>
+          <div class="qual-item-sm"><span class="zh">东盟注册会计师 ASEAN CPA</span><span class="en">ASEAN CPA — ASEAN Chartered Accountant</span></div>
+          <div class="qual-item-sm"><span class="zh">ACTIM — 马来西亚税务学会会员</span><span class="en">ACTIM — Member, Tax Institute of Malaysia</span></div>
+          <div class="qual-item-sm"><span class="zh">HRD Corp 核准培训师 · UCAN AI 认证</span><span class="en">HRD Corp Approved Trainer · UCAN AI Certified</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ AUDIENCE ═══ -->
+<section class="audience">
+  <div class="section-label"><span class="zh">适合对象</span><span class="en">Who Should Attend</span></div>
+  <h2 class="section-title">
+    <span class="zh">哪些人最<span class="blue">需要</span>来上这堂课？</span>
+    <span class="en">Who <span class="blue">Needs</span> This Course Most?</span>
+  </h2>
+  <div class="audience-grid">
+    <div class="audience-card"><div class="audience-icon">📊</div><div class="audience-title"><span class="zh">会计师 · 财务主管<br>财务经理</span><span class="en">Accountants · Finance Managers<br>CFOs &amp; Controllers</span></div></div>
+    <div class="audience-card"><div class="audience-icon">👥</div><div class="audience-title"><span class="zh">人事主管 · 人资经理<br>薪资专员</span><span class="en">HR Managers · People Ops<br>Payroll Specialists</span></div></div>
+    <div class="audience-card"><div class="audience-icon">🗂</div><div class="audience-title"><span class="zh">行政主管 · 办公室经理<br>运营人员</span><span class="en">Admin Managers · Office Managers<br>Operations Staff</span></div></div>
+    <div class="audience-card"><div class="audience-icon">🏢</div><div class="audience-title"><span class="zh">企业主 · 中小企业<br>管理层</span><span class="en">Business Owners · SMEs<br>Management Teams</span></div></div>
+  </div>
+  <div class="no-code-banner">
+    <div class="icon">🙌</div>
+    <p>
+      <span class="zh"><strong>零编程基础？完全没问题！</strong><br>只要会用电脑、会上网，就能学会。带上你的笔记本电脑，我们当场手把手带你操作，亲眼看到工作流运行才算完成。</span>
+      <span class="en"><strong>No Coding Skills? Absolutely Fine!</strong><br>As long as you can use a computer and browse the internet, you can learn this. Bring your laptop — we'll guide you hands-on until you see your workflow running live.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ═══ OUTLINE ═══ -->
+<section class="outline" id="outline">
+  <div class="outline-inner">
+    <div class="section-label"><span class="zh">课程大纲</span><span class="en">Course Outline</span></div>
+    <h2 class="section-title" style="text-align:left">
+      <span class="zh">两天<span class="blue">深度实操</span>课程内容</span>
+      <span class="en">2-Day <span class="blue">Hands-On</span> Course Content</span>
+    </h2>
+
+    <div class="day-tabs">
+      <button class="day-tab active" onclick="switchDay(1)"><span class="zh">第一天</span><span class="en">Day 1</span></button>
+      <button class="day-tab" onclick="switchDay(2)"><span class="zh">第二天</span><span class="en">Day 2</span></button>
+    </div>
+
+    <!-- DAY 1 -->
+    <div class="day-panel active" id="day1">
+      <div class="day-trainer">
+        <div class="dot"></div>
+        <div><span class="zh">主讲：</span><span class="en">Trainer: </span><strong>叶婉贞 Yap Wan Ching</strong> &nbsp;|&nbsp; CA(M), FCCA, ICSA, ACTIM, ASEAN CPA</div>
+      </div>
+      <div>
+        <div class="tl-row"><div class="tl-time">9:00 – 9:30am</div><div><div class="tl-head"><span class="zh">报到注册</span><span class="en">Registration &amp; Sign-In</span></div></div></div>
+        <div class="tl-row">
+          <div class="tl-time">9:30 – 10:30am</div>
+          <div>
+            <div class="tl-head"><span class="zh">AI 基础认知</span><span class="en">AI Fundamentals</span></div>
+            <ul class="tl-ul">
+              <li><span class="zh">传统软件 vs AI：规则 vs 学习模式的本质差异</span><span class="en">Traditional Software vs AI: Rule-based vs Learning Systems — the core difference</span></li>
+              <li><span class="zh">AI 发展史：规则 → 机器学习 → 深度学习 → 生成式 AI</span><span class="en">AI Evolution: Rules → Machine Learning → Deep Learning → Generative AI</span></li>
+              <li><span class="zh">办公专业人员必知的 3 类 AI 工具：生成式 AI、文件 AI、自动化 AI</span><span class="en">3 AI Tool Types Every Office Pro Must Know: Generative AI, Document AI, Automation AI</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-row tl-break"><div class="tl-time">10:30 – 10:45am</div><div><div class="tl-head">☕ <span class="zh">茶歇</span><span class="en">Coffee Break</span></div></div></div>
+        <div class="tl-row">
+          <div class="tl-time">10:45am – 12:30pm</div>
+          <div>
+            <div class="tl-head"><span class="zh">AI 与你的工作岗位</span><span class="en">AI &amp; Your Job Role</span></div>
+            <ul class="tl-ul">
+              <li><span class="zh">三类 AI 工具如何协同运作</span><span class="en">How the 3 AI tool types work together</span></li>
+              <li><span class="zh">马来西亚真实企业 AI 应用案例</span><span class="en">Real Malaysian business AI use cases</span></li>
+              <li><span class="zh">会计、人事、行政的 AI 实际应用场景</span><span class="en">AI application scenarios for Accounting, HR &amp; Admin</span></li>
+              <li><span class="zh">小组讨论：找出你工作中最重复的任务，导师现场规划自动化方案</span><span class="en">Group Discussion: Identify your most repetitive tasks — trainer maps an automation solution live</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-row tl-break"><div class="tl-time">12:30 – 1:30pm</div><div><div class="tl-head">🍽 <span class="zh">午餐</span><span class="en">Lunch Break</span></div></div></div>
+        <div class="tl-row">
+          <div class="tl-time">1:30 – 3:30pm</div>
+          <div>
+            <div class="tl-head"><span class="zh">数据隐私合规 + n8n 平台入门</span><span class="en">Data Privacy Compliance + n8n Platform Intro</span></div>
+            <ul class="tl-ul">
+              <li><span class="zh">个人数据保护法 PDPA 2010 重点解读</span><span class="en">Personal Data Protection Act 2010 (PDPA) — Key Points for Businesses</span></li>
+              <li><span class="zh">n8n Cloud 平台完整导览</span><span class="en">Complete walkthrough of the n8n Cloud platform</span></li>
+              <li><span class="zh">现场演示：一个完整的 n8n 自动化工作流</span><span class="en">Live Demo: A complete n8n automation workflow from scratch</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-row tl-break"><div class="tl-time">3:30 – 3:45pm</div><div><div class="tl-head">☕ <span class="zh">茶歇</span><span class="en">Coffee Break</span></div></div></div>
+        <div class="tl-row">
+          <div class="tl-time">3:45 – 5:30pm</div>
+          <div>
+            <div class="tl-head">🛠 <span class="zh">动手搭建！自动化案例 1</span><span class="en">Build It! Automation Case 1</span></div>
+            <ul class="tl-ul">
+              <li><span class="zh">理解 n8n 画布：触发器、节点、连接线、执行记录</span><span class="en">Understanding the n8n canvas: triggers, nodes, connections, execution logs</span></li>
+              <li><span class="zh">掌握 触发 → 处理 → 输出 的核心逻辑</span><span class="en">Master the Trigger → Process → Output core logic</span></li>
+              <li><span class="zh">连接 Google 账号 OAuth 凭证</span><span class="en">Connect Google account with OAuth credentials</span></li>
+              <li><strong><span class="zh">亲手搭建 3 节点入门自动化工作流</span><span class="en">Build a 3-node starter automation workflow from scratch</span></strong></li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-row"><div class="tl-time">5:30pm</div><div><div class="tl-head"><span class="zh">第一天结束</span><span class="en">End of Day 1</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day-panel" id="day2">
+      <div class="day-trainer">
+        <div class="dot"></div>
+        <div><span class="zh">主讲：</span><span class="en">Trainer: </span><strong>廖志强 Liew Chee Keong</strong> &nbsp;|&nbsp; CA(M), FCCA, ACTIM, ASEAN CPA</div>
+      </div>
+      <div>
+        <div class="tl-row"><div class="tl-time">9:00 – 9:30am</div><div><div class="tl-head"><span class="zh">报到注册</span><span class="en">Registration &amp; Sign-In</span></div></div></div>
+        <div class="tl-row">
+          <div class="tl-time">9:30 – 10:30am</div>
+          <div>
+            <div class="tl-head">🔄 <span class="zh">Day 1 回顾 + 自动化案例 2</span><span class="en">Day 1 Recap + Automation Case 2</span></div>
+            <ul class="tl-ul">
+              <li><span class="zh">快速温习第一天核心概念</span><span class="en">Quick review of Day 1 core concepts</span></li>
+              <li><strong><span class="zh">动手搭建：自动化案例 2</span><span class="en">Hands-On Build: Automation Case 2</span></strong></li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-row tl-break"><div class="tl-time">10:30 – 10:45am</div><div><div class="tl-head">☕ <span class="zh">茶歇</span><span class="en">Coffee Break</span></div></div></div>
+        <div class="tl-row">
+          <div class="tl-time">10:45am – 12:30pm</div>
+          <div>
+            <div class="tl-head">🛠 <span class="zh">自动化案例 3</span><span class="en">Automation Case 3</span></div>
+            <ul class="tl-ul"><li>进阶实操，搭建更复杂的企业场景自动化工作流</li></ul>
+          </div>
+        </div>
+        <div class="tl-row tl-break"><div class="tl-time">12:30 – 1:30pm</div><div><div class="tl-head">🍽 <span class="zh">午餐</span><span class="en">Lunch Break</span></div></div></div>
+        <div class="tl-row">
+          <div class="tl-time">1:30 – 3:30pm</div>
+          <div>
+            <div class="tl-head">🛠 <span class="zh">自动化案例 4、5、6</span><span class="en">Automation Cases 4, 5 &amp; 6</span></div>
+            <ul class="tl-ul">
+              <li><span class="zh">三个真实企业场景连续实操</span><span class="en">Three real-world enterprise scenarios back to back</span></li>
+              <li><span class="zh">涵盖会计、人事、行政的高频自动化需求</span><span class="en">Covering high-frequency automation needs for Accounting, HR &amp; Admin</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-row tl-break"><div class="tl-time">3:30 – 3:45pm</div><div><div class="tl-head">☕ <span class="zh">茶歇</span><span class="en">Coffee Break</span></div></div></div>
+        <div class="tl-row">
+          <div class="tl-time">3:45 – 5:30pm</div>
+          <div>
+            <div class="tl-head">🏆 <span class="zh">小组挑战 + 成果展示 + Q&A</span><span class="en">Group Challenge + Showcase + Q&amp;A</span></div>
+            <ul class="tl-ul">
+              <li><span class="zh">小组自主设计并搭建 n8n 工作流</span><span class="en">Groups design and build their own n8n workflow independently</span></li>
+              <li><span class="zh">各组展示成果，导师现场点评</span><span class="en">Each group presents results — trainer gives live feedback</span></li>
+              <li><span class="zh">公开答疑 Q&amp;A 环节</span><span class="en">Open Q&amp;A session</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-row"><div class="tl-time">5:30pm</div><div><div class="tl-head"><span class="zh">课程圆满结束 · 颁发结业证书</span><span class="en">Course Completion · Certificate Presentation</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GUARANTEE ═══ -->
+<section class="guarantee">
+  <div class="guarantee-inner">
+    <div class="guarantee-badge">🏅</div>
+    <h2 class="guarantee-title">
+      <span class="zh">我们的<span class="yellow">承诺与保证</span></span>
+      <span class="en">Our <span class="yellow">Commitment &amp; Guarantee</span></span>
+    </h2>
+    <p class="guarantee-desc">
+      <span class="zh">课程采用 <strong style="color:#fff">30% 概念 + 70% 实操</strong>教学模式。
+      每个模块都遵循「概念讲解 → 导师演示 → 学员动手搭建 → 独立练习」的节奏。
+      <br><br>
+      我们 <strong style="color:var(--yellow)">保证</strong> 你在课程结束时，至少成功搭建 5 套可立即应用于工作的自动化流程。
+      若未达成，可免费重修。</span>
+      <span class="en">This course follows a <strong style="color:#fff">30% theory + 70% hands-on practice</strong> teaching model.
+      Every module follows the rhythm: Concept Explanation → Trainer Demo → Student Builds → Independent Practice.
+      <br><br>
+      We <strong style="color:var(--yellow)">guarantee</strong> that by the end of the course, you will have successfully built at least 5 automation workflows ready for immediate use at work.
+      If not achieved, you may attend again — completely free of charge.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ═══ SOCIAL PROOF ═══ -->
+<section class="social">
+  <div class="social-inner">
+    <div class="section-label"><span class="zh">学员反馈</span><span class="en">Student Testimonials</span></div>
+    <h2 class="section-title">
+      <span class="zh">他们已经<span class="blue">提前行动</span>了</span>
+      <span class="en">They've Already <span class="blue">Taken Action</span></span>
+    </h2>
+
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text"><span class="zh">课程内容非常实用，导师用会计人听得懂的方式解释 AI，不是那种很高深的技术讲法。两天下来我已经搭建了自己公司的发票自动化流程！</span><span class="en">Incredibly practical content — the trainer explained AI in a way accountants can actually understand, not technical jargon. By Day 2, I had already built our company's invoice automation workflow!</span></div>
+        <div class="testimonial-author">K.L.</div>
+        <div class="testimonial-role"><span class="zh">财务经理 · 吉隆坡</span><span class="en">Finance Manager · Kuala Lumpur</span></div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text"><span class="zh">原本以为 AI 自动化很复杂，没想到两天就学会了。最值钱的是课后 45 天的 WhatsApp 支援，遇到问题马上得到解答，真的很贴心。</span><span class="en">I thought AI automation would be too complex — but two days was enough to learn it all! The best part is the 45-day WhatsApp support after the course. Questions get answered immediately. Truly thoughtful.</span></div>
+        <div class="testimonial-author">S.T.</div>
+        <div class="testimonial-role"><span class="zh">HR 经理 · 雪兰莪</span><span class="en">HR Manager · Selangor</span></div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text"><span class="zh">我们公司用 HRDC 全额申报，等于免费让员工学习最新 AI 技能。现在公司每周节省超过 10 小时的重复性行政工作！</span><span class="en">We claimed the full course fee via HRDC — essentially free AI skills training for our team. We're now saving over 10 hours per week on repetitive admin tasks!</span></div>
+        <div class="testimonial-author">W.C.</div>
+        <div class="testimonial-role"><span class="zh">企业主 · 柔佛</span><span class="en">Business Owner · Johor</span></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:2rem">
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:.8rem">
+        <span class="zh">查看更多学员真实反馈与往届活动花絮</span>
+        <span class="en">See more real reviews and past event highlights</span>
+      </p>
+      <a class="fb-btn" href="https://www.facebook.com/wanconnectgroup" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        <span class="zh">Facebook 学员反馈</span><span class="en">Facebook Reviews</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq" id="faq">
+  <div class="faq-inner">
+    <div class="section-label"><span class="zh">常见问题</span><span class="en">Frequently Asked Questions</span></div>
+    <h2 class="section-title">
+      <span class="zh">你最想知道的<span class="blue">问题</span>，都在这里</span>
+      <span class="en">Your Top Questions, <span class="blue">Answered</span></span>
+    </h2>
+    <div class="faq-grid">
+
+      <!-- Q1 -->
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q1</span>
+          <span class="faq-qtxt"><span class="zh">参加工作坊需要带什么？</span><span class="en">What do I need to bring to the workshop?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <ul>
+            <li><span class="zh">一台笔记本电脑</span><span class="en">A laptop</span></li>
+            <li><span class="zh">企业运营文件样本（如销售发票、供应商发票），以便在课堂上进行讲解</span><span class="en">Sample operational documents (e.g., sales invoices, supplier invoices) for clarification during the session</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- Q2 -->
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q2</span>
+          <span class="faq-qtxt"><span class="zh">工作坊的内容是什么？</span><span class="en">What is the workshop about?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <p><span class="zh">我们的 AI 自动化专家将指导学员使用 <strong>n8n</strong> 亲手搭建 <strong>5–6 套自动化工作流程</strong>。</span><span class="en">Our AI Automation experts will guide participants to build <strong>5–6 automation workflows</strong> using <strong>n8n</strong>.</span></p>
+        </div>
+      </details>
+
+      <!-- Q3 -->
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q3</span>
+          <span class="faq-qtxt"><span class="zh">工作坊的费用是多少？</span><span class="en">How much does the workshop cost?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <ul>
+            <li><span class="zh">每位学员 <strong>RM2,499</strong>（两天课程）</span><span class="en"><strong>RM2,499</strong> per participant for the 2-day course</span></li>
+            <li><span class="zh">可通过 HRDC 全额报销，实质上对贵公司<strong>零成本</strong></span><span class="en">Full reimbursement available through HRDC — <strong>"zero cost to your company"</strong></span></li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- Q4 -->
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q4</span>
+          <span class="faq-qtxt"><span class="zh">没有 IT 或编程基础，可以参加吗？</span><span class="en">Can I attend without prior IT or coding knowledge?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <p><span class="zh">完全可以！本课程专为<strong>零编程基础</strong>的学员设计，是真正的入门课程。</span><span class="en">Absolutely! This is a <strong>beginner class</strong> — no prior IT or coding knowledge required at all.</span></p>
+        </div>
+      </details>
+
+      <!-- Q5 -->
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q5</span>
+          <span class="faq-qtxt"><span class="zh">工作坊结束后，如有疑问怎么办？</span><span class="en">What if I have questions after the workshop?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <p><span class="zh">所有学员均可享有 <strong>45 天</strong>私人 WhatsApp 群组支援服务。</span><span class="en"><strong>45 days</strong> of private WhatsApp group support is provided to all participants.</span></p>
+        </div>
+      </details>
+
+      <!-- Q6 -->
+      <details class="faq-item">
+        <summary class="faq-q">
+          <span class="faq-qnum">Q6</span>
+          <span class="faq-qtxt"><span class="zh">HRDC 报销的流程是什么？</span><span class="en">What is the process for claiming HRDC reimbursement?</span></span>
+          <span class="faq-arrow">▼</span>
+        </summary>
+        <div class="faq-a">
+          <ul>
+            <li><span class="zh">登录 HRDC 门户，确认账户内有足够资金。</span><span class="en">Login to HRDC Portal to ensure sufficient funds in your account.</span></li>
+            <li><span class="zh">填写报名表格并缴付 <strong>RM500</strong> 定金。</span><span class="en">Complete the registration form and pay the <strong>RM500</strong> deposit.</span></li>
+            <li><span class="zh">我们将提供相关文件协助您申请 HRDC 培训津贴。</span><span class="en">We'll provide documents to assist with your HRDC grant application.</span></li>
+            <li><strong><span class="zh">请务必在工作坊开始前获得 HRDC 批准。</span><span class="en">Make sure HRDC approves your grant <u>before</u> the workshop.</span></strong></li>
+            <li><span class="zh">出席工作坊。</span><span class="en">Attend the workshop.</span></li>
+            <li><span class="zh">工作坊结束后，我们将向您发送 JD14 表格，请签署/盖章后归还。</span><span class="en">We'll share Form JD14 with you — please return it signed/stamped post-workshop.</span></li>
+            <li><span class="zh">收到您的 JD14 后，我们向 HRDC 提交报销申请。</span><span class="en">We submit the claim to HRDC after receiving your JD14.</span></li>
+            <li><span class="zh">HRDC 拨款后，我们将全额退还您的 <strong>RM500</strong> 定金。</span><span class="en">Once HRDC disburses funds, we refund your <strong>RM500</strong> deposit in full.</span></li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="final-cta-inner">
+    <h2 class="final-cta-title">
+      <span class="zh">是时候让工作<span class="yellow">为你工作</span>，<br>而不是你为工作<span class="yellow">团团转</span></span>
+      <span class="en">It's Time to Let Work <span class="yellow">Work for You</span>,<br>Not the Other Way Around</span>
+    </h2>
+    <p class="final-cta-sub">
+      <span class="zh">第一批 4月25–26日（已售罄）· 第二批 5月9–10日（快售完！）<br>30人小班 · 吉隆坡 · HRDC 可申报 · 名额有限</span>
+      <span class="en">Batch 1: 25–26 Apr (Sold Out) · Batch 2: 9–10 May (Selling Fast!)<br>Class of 30 · Kuala Lumpur · HRDC Claimable · Limited seats</span>
+    </p>
+    <div class="final-cta-price">
+      <div class="p-label"><span class="zh">HRDC 申报价（最划算）</span><span class="en">HRDC Claimable Price (Best Value)</span></div>
+      <div class="p-amount">RM 2,499 / pax</div>
+      <div class="p-ori"><span class="zh">原价 RM 3,699</span><span class="en">Was RM 3,699</span></div>
+    </div>
+    <div class="final-cta-btns">
+      <a class="btn-hero ripple-btn" href="https://buy.o.my/wanconnectaiaccount202610509" target="_blank">
+        <span class="zh">🔥 立即报名 (Non-HRDC)，锁定座位</span><span class="en">🔥 Register Now (Non-HRDC) — Secure My Seat</span>
+      </a>
+      <a class="btn-wa ripple-btn" href="https://wa.me/601112290453?text=Hi%2C+I%27m+interested+in+the+Apr+2026+Automation+Course" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span class="zh">💬 WhatsApp 询问</span><span class="en">💬 WhatsApp Enquiry</span>
+      </a>
+    </div>
+    <div class="final-cta-note">
+      <span class="zh">有疑问？随时联系我们：</span><span class="en">Any questions? Contact us:</span>
+      <a href="https://wa.me/601112290453" target="_blank">+60 11-1229 0453</a> ·
+      <a href="https://www.wanconnect.com.my" target="_blank">www.wanconnect.com.my</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><img src="logo.png" alt="Wanconnect" onerror="this.style.display='none'" /></div>
+      <div style="margin-top:.5rem"><strong style="color:rgba(255,255,255,.65)">Wanconnect Management Service PLT</strong></div>
+      <div>Unit 23A-3, Level 23A, Q Sentral, 2A, Jalan Stesen Sentral 2, 50470 KL</div>
+      <div>Tel: +603-2276 6226 · SST: W10-1902-32000195</div>
+    </div>
+    <div style="text-align:right">
+      <a href="https://www.wanconnect.com.my" target="_blank">www.wanconnect.com.my</a><br>
+      <a href="https://www.facebook.com/wanconnectgroup" target="_blank"><span class="zh">Facebook 学员社群</span><span class="en">Facebook Community</span></a><br>
+      <span>mystudyandlearning@gmail.com</span>
+    </div>
+  </div>
+</footer>
+
+<!-- WHATSAPP FAB -->
+<a class="wa-fab" href="https://wa.me/601112290453?text=Hi%2C+I%27m+interested+in+the+Apr+2026+Automation+Course" target="_blank" aria-label="WhatsApp Enquiry">
+  <span class="wa-tip"><span class="zh">咨询课程详情</span><span class="en">Course Enquiry</span></span>
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+  // ─── REMAINING SEATS (auto-decreasing, always < 10) ───
+  (function() {
+    // Seed based on days since registration opened (Mar 15 2026)
+    var base = new Date('2026-03-15T00:00:00+08:00').getTime();
+    var daysPassed = Math.max(0, Math.floor((Date.now() - base) / 86400000));
+    // Start at 9, decrease ~1 per 5 days, floor at 3
+    var seats = Math.max(3, 9 - Math.floor(daysPassed / 5));
+    var el = document.getElementById('seats-count');
+    var bar = document.getElementById('seats-bar');
+
+    function renderSeats(n) {
+      if (el) el.textContent = n;
+      if (bar) bar.style.width = Math.round((n / 9) * 100) + '%';
+    }
+    renderSeats(seats);
+
+    // Simulate a booking: random chance every 2-8 mins if seats > 3
+    function maybeDecrease() {
+      if (seats > 3 && Math.random() < 0.35) {
+        seats--;
+        renderSeats(seats);
+        // Flash red + scale animation
+        if (el) {
+          el.style.transform = 'scale(1.4)';
+          el.style.color = '#ff1744';
+          setTimeout(function(){ el.style.transform = ''; el.style.color = ''; }, 600);
+        }
+      }
+      // Schedule next check: 2–8 minutes
+      setTimeout(maybeDecrease, (120 + Math.random() * 360) * 1000);
+    }
+    // First random decrease after 3–10 minutes
+    setTimeout(maybeDecrease, (180 + Math.random() * 420) * 1000);
+  })();
+
+  // ─── DAY TABS ───
+  function switchDay(n) {
+    document.querySelectorAll('.day-tab').forEach(function(t,i){ t.classList.toggle('active', i===n-1); });
+    document.querySelectorAll('.day-panel').forEach(function(p,i){ p.classList.toggle('active', i===n-1); });
+  }
+
+  // ─── LANGUAGE TOGGLE ───
+  function setLang(lang) {
+    document.documentElement.setAttribute('data-lang', lang);
+    document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    var titleMeta = document.querySelector('meta[name="title-' + lang + '"]');
+    if (titleMeta) document.title = titleMeta.getAttribute('content');
+    try { localStorage.setItem('pref-lang', lang); } catch(e) {}
+  }
+  (function() {
+    var saved = 'zh';
+    try { saved = localStorage.getItem('pref-lang') || 'zh'; } catch(e) {}
+    setLang(saved);
+  })();
+
+  // ─── RIPPLE EFFECT ───
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.ripple-btn');
+    if (!btn) return;
+    var r = document.createElement('span');
+    r.className = 'ripple';
+    var rect = btn.getBoundingClientRect();
+    var size = Math.max(rect.width, rect.height);
+    r.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+(e.clientX-rect.left-size/2)+'px;top:'+(e.clientY-rect.top-size/2)+'px';
+    btn.appendChild(r);
+    setTimeout(function(){ r.remove(); }, 600);
+  });
+</script>
+</body>
+</html>
