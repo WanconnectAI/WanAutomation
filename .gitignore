@@ -1,9 +1,6 @@
-# Claude / agent system files
-.claude/
-.agent/
-.agents/
-skills-lock.json
-
-# Temporary scripts
-patch.py
-*.tmp.py
+node_modules/
+client/dist/
+database/portal.db
+server/uploads/
+.env
+*.log
