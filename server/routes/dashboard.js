@@ -1,24 +1,33 @@
-const express = require('express');
-const { getDB } = require('../database/init');
-const { authMiddleware } = require('../middleware/auth');
+const express = require('express')
+const db = require('../database/db')
+const { authMiddleware } = require('../middleware/auth')
 
-const router = express.Router();
+const router = express.Router()
 
-router.get('/stats', authMiddleware, (req, res) => {
-  const db = getDB();
-  const today = new Date().toISOString().split('T')[0];
+router.get('/stats', authMiddleware, async (req, res) => {
+  try {
+    const [totalSub, todaySub, totalWf, activeWf, recentSub, byForm] = await Promise.all([
+      db.get('SELECT COUNT(*) as c FROM form_submissions'),
+      db.get("SELECT COUNT(*) as c FROM form_submissions WHERE submitted_at::date = CURRENT_DATE"),
+      db.get('SELECT COUNT(*) as c FROM workflows'),
+      db.get("SELECT COUNT(*) as c FROM workflows WHERE status = 'Active'"),
+      db.all('SELECT * FROM form_submissions ORDER BY submitted_at DESC LIMIT 10'),
+      db.all('SELECT form_type, COUNT(*) as count FROM form_submissions GROUP BY form_type'),
+    ])
 
-  const totalForms = 4;
-  const totalSubmissions = db.prepare('SELECT COUNT(*) as c FROM form_submissions').get().c;
-  const todaySubmissions = db.prepare(`SELECT COUNT(*) as c FROM form_submissions WHERE date(submitted_at) = date('now', 'localtime')`).get().c;
-  const totalWorkflows = db.prepare('SELECT COUNT(*) as c FROM workflows').get().c;
-  const activeWorkflows = db.prepare("SELECT COUNT(*) as c FROM workflows WHERE status = 'Active'").get().c;
+    res.json({
+      totalForms: 4,
+      totalSubmissions: parseInt(totalSub.c),
+      todaySubmissions: parseInt(todaySub.c),
+      totalWorkflows: parseInt(totalWf.c),
+      activeWorkflows: parseInt(activeWf.c),
+      recentSubmissions: recentSub,
+      submissionsByForm: byForm,
+    })
+  } catch (err) {
+    console.error('Dashboard stats error:', err)
+    res.status(500).json({ error: 'Failed to load stats' })
+  }
+})
 
-  const recentSubmissions = db.prepare('SELECT * FROM form_submissions ORDER BY submitted_at DESC LIMIT 10').all();
-
-  const submissionsByForm = db.prepare(`SELECT form_type, COUNT(*) as count FROM form_submissions GROUP BY form_type`).all();
-
-  res.json({ totalForms, totalSubmissions, todaySubmissions, totalWorkflows, activeWorkflows, recentSubmissions, submissionsByForm });
-});
-
-module.exports = router;
+module.exports = router
