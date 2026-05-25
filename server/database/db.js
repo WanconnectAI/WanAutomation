@@ -1,9 +1,10 @@
 require('dotenv').config()
 const { Pool } = require('pg')
 
+const connectionString = process.env.SUPABASE_URL || process.env.DATABASE_URL
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
+  connectionString,
+  ssl: connectionString ? { rejectUnauthorized: false } : false,
 })
 
 pool.on('error', (err) => console.error('PostgreSQL pool error:', err.message))
