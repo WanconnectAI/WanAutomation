@@ -1,73 +1,118 @@
-const { DatabaseSync } = require('node:sqlite');
-const bcrypt = require('bcryptjs');
-const path = require('path');
-const fs = require('fs');
+require('dotenv').config()
+const bcrypt = require('bcryptjs')
+const db = require('./db')
 
-const dbDir = path.join(__dirname, '../../database');
-if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
-
-const DB_PATH = path.join(dbDir, 'portal.db');
-let db;
-
-function getDB() {
-  if (!db) db = new DatabaseSync(DB_PATH);
-  return db;
-}
-
-function initDB() {
-  const db = getDB();
-
-  db.exec(`
+async function initDB() {
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       role TEXT DEFAULT 'admin',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
     CREATE TABLE IF NOT EXISTS form_submissions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       form_type TEXT NOT NULL,
       data TEXT NOT NULL,
-      submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      submitted_by TEXT DEFAULT 'anonymous'
+      submitted_at TIMESTAMPTZ DEFAULT NOW(),
+      submitted_by TEXT DEFAULT 'anonymous',
+      pdf_path TEXT
     );
 
     CREATE TABLE IF NOT EXISTS workflows (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
-      description TEXT,
-      department TEXT,
-      client_name TEXT,
-      url TEXT,
+      description TEXT DEFAULT '',
+      department TEXT DEFAULT '',
+      client_name TEXT DEFAULT '',
+      url TEXT DEFAULT '',
       tags TEXT DEFAULT '[]',
       status TEXT DEFAULT 'Active',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMPTZ DEFAULT NOW()
     );
-  `);
 
-  // Seed admin users
-  const existing = db.prepare('SELECT id FROM users WHERE username = ?').get('admin');
+    CREATE TABLE IF NOT EXISTS custom_forms (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      department TEXT DEFAULT 'Custom',
+      color TEXT DEFAULT 'blue',
+      icon TEXT DEFAULT '📋',
+      fields TEXT DEFAULT '[]',
+      pages TEXT DEFAULT '[]',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS automation_rules (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      form_type TEXT NOT NULL,
+      trigger TEXT DEFAULT 'on_submit',
+      action_type TEXT DEFAULT 'email',
+      action_config TEXT DEFAULT '{}',
+      is_active INTEGER DEFAULT 1,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS portal_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS form_settings (
+      id SERIAL PRIMARY KEY,
+      form_type TEXT UNIQUE NOT NULL,
+      form_name TEXT DEFAULT '',
+      logo_url TEXT,
+      is_published INTEGER DEFAULT 0,
+      public_token TEXT UNIQUE,
+      monday_api_token TEXT DEFAULT '',
+      monday_board_id TEXT DEFAULT '',
+      monday_column_mappings TEXT DEFAULT '{}',
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `)
+
+  // Seed admin users if none exist
+  const existing = await db.get('SELECT id FROM users LIMIT 1')
   if (!existing) {
-    const hash1 = bcrypt.hashSync('admin123', 10);
-    const hash2 = bcrypt.hashSync('ops456', 10);
-    db.prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)').run('admin', hash1, 'admin');
-    db.prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)').run('opsmanager', hash2, 'admin');
-    console.log('Seeded admin users: admin/admin123 and opsmanager/ops456');
+    const hash1 = bcrypt.hashSync('admin123', 10)
+    const hash2 = bcrypt.hashSync('ops456', 10)
+    await db.insert('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', ['admin', hash1, 'admin'])
+    await db.insert('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', ['opsmanager', hash2, 'admin'])
+    console.log('Seeded admin users: admin/admin123 and opsmanager/ops456')
   }
 
-  // Seed sample workflows
-  const wfCount = db.prepare('SELECT COUNT(*) as c FROM workflows').get();
-  if (wfCount.c === 0) {
-    const stmt = db.prepare(`INSERT INTO workflows (name, description, department, client_name, url, tags, status) VALUES (?, ?, ?, ?, ?, ?, ?)`);
-    stmt.run('Invoice Processing Automation', 'Automatically processes incoming invoices, extracts data via OCR, and routes for approval.', 'Finance', 'Internal', 'https://n8n.example.com/webhook/invoice-process', JSON.stringify(['Finance', 'OCR', 'Approval']), 'Active');
-    stmt.run('New Employee Onboarding', 'Sends welcome emails, creates accounts, and schedules orientation upon new hire submission.', 'HR', 'Internal', 'https://n8n.example.com/webhook/onboarding', JSON.stringify(['HR', 'Email', 'Onboarding']), 'Active');
-    stmt.run('Client Report Generation', 'Generates weekly performance reports and delivers to client contacts automatically.', 'Operations', 'ABC Corp', 'https://n8n.example.com/webhook/client-report', JSON.stringify(['Reports', 'Scheduled', 'Email']), 'Inactive');
-    console.log('Seeded sample workflows');
+  // Seed sample workflows if none exist
+  const wfCount = await db.get('SELECT COUNT(*) as c FROM workflows')
+  if (parseInt(wfCount.c) === 0) {
+    const wfs = [
+      ['Invoice Processing Automation', 'Automatically processes incoming invoices, extracts data via OCR, and routes for approval.', 'Finance', 'Internal', 'https://n8n.example.com/webhook/invoice-process', JSON.stringify(['Finance', 'OCR', 'Approval']), 'Active'],
+      ['New Employee Onboarding', 'Sends welcome emails, creates accounts, and schedules orientation upon new hire submission.', 'HR', 'Internal', 'https://n8n.example.com/webhook/onboarding', JSON.stringify(['HR', 'Email', 'Onboarding']), 'Active'],
+      ['Client Report Generation', 'Generates weekly performance reports and delivers to client contacts automatically.', 'Operations', 'ABC Corp', 'https://n8n.example.com/webhook/client-report', JSON.stringify(['Reports', 'Scheduled', 'Email']), 'Inactive'],
+    ]
+    for (const wf of wfs) {
+      await db.insert('INSERT INTO workflows (name, description, department, client_name, url, tags, status) VALUES (?,?,?,?,?,?,?)', wf)
+    }
+    console.log('Seeded sample workflows')
   }
 
-  console.log('Database initialized at', DB_PATH);
+  // Seed form_settings for pre-built forms
+  const formTypes = [
+    ['job_application', 'Job Application Form'],
+    ['seminar_registration', 'Seminar Registration Form'],
+    ['staff_claim', 'Staff Claim Form'],
+    ['client_request', 'Client Request Form'],
+  ]
+  for (const [type, name] of formTypes) {
+    await db.exec(`INSERT INTO form_settings (form_type, form_name) VALUES ('${type}', '${name}') ON CONFLICT DO NOTHING`)
+  }
+
+  console.log('Database initialised (PostgreSQL)')
 }
 
-module.exports = { getDB, initDB };
+module.exports = { initDB }

@@ -9,6 +9,10 @@ import FormsAndTables from './pages/FormsAndTables'
 import Workflows from './pages/Workflows'
 import Settings from './pages/Settings'
 import FormView from './pages/FormView'
+import FormBuilder from './pages/FormBuilder'
+import PublicForm from './pages/PublicForm'
+import Automations from './pages/Automations'
+import UserManagement from './pages/UserManagement'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -31,10 +35,16 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="forms" element={<FormsAndTables />} />
+        <Route path="forms/builder" element={<FormBuilder />} />
+        <Route path="forms/builder/:id" element={<FormBuilder />} />
         <Route path="forms/:formType" element={<FormView />} />
         <Route path="workflows" element={<Workflows />} />
+        <Route path="automations" element={<Automations />} />
+        <Route path="users" element={<UserManagement />} />
         <Route path="settings" element={<Settings />} />
       </Route>
+      {/* Public form route — no auth required */}
+      <Route path="/f/:token" element={<PublicForm />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
