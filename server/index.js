@@ -1,4 +1,8 @@
 require('dotenv').config()
+// Debug: log env vars on startup (safe - only shows first 30 chars)
+console.log('[ENV] DATABASE_URL:', process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 40) + '...' : 'UNDEFINED')
+console.log('[ENV] DATABASE_SSL:', process.env.DATABASE_SSL)
+console.log('[ENV] NODE_ENV:', process.env.NODE_ENV)
 const express = require('express')
 const cors = require('cors')
 const path = require('path')
