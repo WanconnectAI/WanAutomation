@@ -39,10 +39,13 @@ export default function WelcomePage() {
       <div className="w-full max-w-md">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <svg className="w-9 h-9 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-            </svg>
+          <div className="mx-auto mb-4 flex items-center justify-center">
+            <img
+              src="/logo-wanconnect.png"
+              alt="Wanconnect"
+              className="h-20 object-contain drop-shadow-lg"
+              onError={e => { e.target.onerror = null; e.target.src = '/logo-wc-icon.jpg' }}
+            />
           </div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">Wanconnect Portal</h1>
           <p className="text-blue-200 text-sm mt-1">Operations Management System</p>
