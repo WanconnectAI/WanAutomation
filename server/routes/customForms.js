@@ -64,12 +64,13 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 router.post('/duplicate-base', authMiddleware, async (req, res) => {
   try {
-    const { name, description, department, color, icon } = req.body
+    const { name, description, department, color, icon, fields, pages } = req.body
     if (!name?.trim()) return res.status(400).json({ error: 'Form name required' })
     const newName = `Copy of ${name.trim()}`
+    const flatFields = pages?.length ? pages.flatMap(p => p.fields || []) : (fields || [])
     const result = await db.insert(
       'INSERT INTO custom_forms (name, description, department, color, icon, fields, pages) VALUES (?,?,?,?,?,?,?)',
-      [newName, description || '', department || 'Custom', color || 'blue', icon || '📋', '[]', '[]']
+      [newName, description || '', department || 'Custom', color || 'blue', icon || '📋', JSON.stringify(flatFields), JSON.stringify(pages || [])]
     )
     const formType = `custom_${result.lastInsertRowid}`
     await db.pool.query(

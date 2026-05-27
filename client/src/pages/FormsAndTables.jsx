@@ -6,6 +6,93 @@ import { useAuth } from '../context/AuthContext'
 import SubmissionsTable from '../components/SubmissionsTable'
 import FormSettingsModal from '../components/FormSettingsModal'
 
+const BASE_FORM_FIELDS = {
+  job_application: {
+    pages: [
+      { id: 'p1', title: 'Personal Information', fields: [
+        { id: 'f1', label: 'Full Name', type: 'text', required: true, placeholder: 'Enter your full name' },
+        { id: 'f2', label: 'Email Address', type: 'email', required: true, placeholder: 'email@example.com' },
+        { id: 'f3', label: 'Phone Number', type: 'tel', required: true, placeholder: '+60 12-345 6789' },
+        { id: 'f4', label: 'NRIC / Passport No.', type: 'text', required: true, placeholder: 'e.g. 900101-01-1234' },
+        { id: 'f5', label: 'Date of Birth', type: 'date', required: true },
+        { id: 'f6', label: 'Nationality', type: 'text', required: true, placeholder: 'e.g. Malaysian' },
+        { id: 'f7', label: 'Current Address', type: 'textarea', required: true, placeholder: 'Full address' },
+      ]},
+      { id: 'p2', title: 'Education', fields: [
+        { id: 'f8', label: 'Highest Qualification', type: 'select', required: true, options: ['SPM','STPM','Diploma','Bachelor\'s Degree','Master\'s Degree','PhD','Others'] },
+        { id: 'f9', label: 'Field of Study', type: 'text', required: true, placeholder: 'e.g. Business Administration' },
+        { id: 'f10', label: 'Institution Name', type: 'text', required: true, placeholder: 'University / College name' },
+        { id: 'f11', label: 'Graduation Year', type: 'text', required: true, placeholder: 'e.g. 2020' },
+        { id: 'f12', label: 'CGPA / Grade', type: 'text', placeholder: 'e.g. 3.50' },
+      ]},
+      { id: 'p3', title: 'Work Experience', fields: [
+        { id: 'f13', label: 'Years of Experience', type: 'select', required: true, options: ['Fresh Graduate','Less than 1 year','1-2 years','3-5 years','5-10 years','More than 10 years'] },
+        { id: 'f14', label: 'Current / Last Employer', type: 'text', placeholder: 'Company name' },
+        { id: 'f15', label: 'Current / Last Position', type: 'text', placeholder: 'Job title' },
+        { id: 'f16', label: 'Key Skills', type: 'textarea', placeholder: 'List your key skills and competencies' },
+      ]},
+      { id: 'p4', title: 'References', fields: [
+        { id: 'f17', label: 'Reference Name', type: 'text', placeholder: 'Full name of reference' },
+        { id: 'f18', label: 'Reference Position', type: 'text', placeholder: 'Job title' },
+        { id: 'f19', label: 'Reference Contact', type: 'tel', placeholder: 'Phone or email' },
+        { id: 'f20', label: 'Relationship', type: 'text', placeholder: 'e.g. Former Supervisor' },
+      ]},
+      { id: 'p5', title: 'Declaration', fields: [
+        { id: 'f21', label: 'Position Applied For', type: 'text', required: true, placeholder: 'Job position' },
+        { id: 'f22', label: 'Expected Salary (RM)', type: 'text', placeholder: 'e.g. 3500' },
+        { id: 'f23', label: 'Available Start Date', type: 'date' },
+        { id: 'f24', label: 'Digital Signature (Full Name)', type: 'text', required: true, placeholder: 'Type your full name as signature' },
+        { id: 'f25', label: 'Declaration Date', type: 'date', required: true },
+      ]},
+    ]
+  },
+  seminar_registration: {
+    pages: [
+      { id: 'p1', title: 'Registration Details', fields: [
+        { id: 'f1', label: 'Full Name', type: 'text', required: true, placeholder: 'Enter your full name' },
+        { id: 'f2', label: 'Email Address', type: 'email', required: true, placeholder: 'email@example.com' },
+        { id: 'f3', label: 'Phone Number', type: 'tel', required: true, placeholder: '+60 12-345 6789' },
+        { id: 'f4', label: 'Company / Organisation', type: 'text', placeholder: 'Your company name' },
+        { id: 'f5', label: 'Job Title', type: 'text', placeholder: 'Your position' },
+        { id: 'f6', label: 'Seminar / Event Name', type: 'text', required: true, placeholder: 'Name of seminar' },
+        { id: 'f7', label: 'Seminar Date', type: 'date', required: true },
+        { id: 'f8', label: 'Dietary Requirement', type: 'select', options: ['None','Halal','Vegetarian','Vegan','Others'] },
+        { id: 'f9', label: 'Special / Accessibility Needs', type: 'textarea', placeholder: 'Any special requirements' },
+      ]}
+    ]
+  },
+  staff_claim: {
+    pages: [
+      { id: 'p1', title: 'Claim Details', fields: [
+        { id: 'f1', label: 'Staff Name', type: 'text', required: true, placeholder: 'Your full name' },
+        { id: 'f2', label: 'Staff ID', type: 'text', required: true, placeholder: 'e.g. WC-001' },
+        { id: 'f3', label: 'Department', type: 'text', required: true, placeholder: 'Your department' },
+        { id: 'f4', label: 'Claim Date', type: 'date', required: true },
+        { id: 'f5', label: 'Claim Type', type: 'select', required: true, options: ['Medical','Travel','Meal Allowance','Accommodation','Parking','Telecommunication','Others'] },
+        { id: 'f6', label: 'Claim Amount (RM)', type: 'number', required: true, placeholder: '0.00' },
+        { id: 'f7', label: 'Description / Remarks', type: 'textarea', required: true, placeholder: 'Describe the expense' },
+        { id: 'f8', label: 'Receipt / Supporting Document', type: 'file' },
+        { id: 'f9', label: 'Supervisor / Approver Name', type: 'text', placeholder: 'Name of approving manager' },
+      ]}
+    ]
+  },
+  client_request: {
+    pages: [
+      { id: 'p1', title: 'Request Information', fields: [
+        { id: 'f1', label: 'Client Name', type: 'text', required: true, placeholder: 'Your full name' },
+        { id: 'f2', label: 'Company Name', type: 'text', placeholder: 'Your company' },
+        { id: 'f3', label: 'Email Address', type: 'email', required: true, placeholder: 'email@example.com' },
+        { id: 'f4', label: 'Phone Number', type: 'tel', placeholder: '+60 12-345 6789' },
+        { id: 'f5', label: 'Request Type', type: 'select', required: true, options: ['Service Request','Project Inquiry','Support Ticket','General Inquiry','Complaint','Others'] },
+        { id: 'f6', label: 'Subject', type: 'text', required: true, placeholder: 'Brief subject of your request' },
+        { id: 'f7', label: 'Description', type: 'textarea', required: true, placeholder: 'Describe your request in detail' },
+        { id: 'f8', label: 'Priority', type: 'select', options: ['Low','Medium','High','Urgent'] },
+        { id: 'f9', label: 'Attachment', type: 'file' },
+      ]}
+    ]
+  }
+}
+
 const BASE_FORMS = [
   { type: 'job_application', name: 'Job Application Form', description: 'Multi-step employment application with personal info, education, employment history, references, and digital signature.', department: 'HR', color: 'purple', icon: '📋', pages: 5 },
   { type: 'seminar_registration', name: 'Seminar Registration Form', description: 'Quick registration for company seminars and training events with dietary and accessibility requirements.', department: 'Training', color: 'green', icon: '🎓', pages: 1 },
@@ -99,18 +186,26 @@ export default function FormsAndTables() {
     }
   }
 
-  const duplicateBaseForm = async (form, e) => {
+  const duplicateBaseForm = async (form, e, thenEdit = false) => {
     e.stopPropagation()
     try {
-      await axios.post('/api/custom-forms/duplicate-base', {
+      const fieldDef = BASE_FORM_FIELDS[form.type] || {}
+      const res = await axios.post('/api/custom-forms/duplicate-base', {
         name: form.name,
         description: form.description,
         department: form.department,
         color: form.color,
         icon: form.icon,
+        pages: fieldDef.pages || [],
+        fields: [],
       })
-      toast.success('Form duplicated as custom form — you can now edit it in the builder')
-      loadAllSettings()
+      if (thenEdit) {
+        toast.success('Form copied — opening editor...')
+        navigate(`/forms/builder/${res.data.id}`)
+      } else {
+        toast.success('Form duplicated with all fields — you can now edit it in the builder')
+        loadAllSettings()
+      }
     } catch {
       toast.error('Failed to duplicate form')
     }
@@ -147,8 +242,15 @@ export default function FormsAndTables() {
     const publicToken = settings?.public_token
     return (
       <div className="flex items-center gap-1">
-        {form.isCustom && (
+        {form.isCustom ? (
           <button onClick={() => navigate(`/forms/builder/${form.customId}`)} title="Edit"
+            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+        ) : (
+          <button onClick={e => duplicateBaseForm(form, e, true)} title="Edit (creates editable copy)"
             className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -156,7 +258,7 @@ export default function FormsAndTables() {
           </button>
         )}
         <button
-          onClick={e => form.isCustom ? duplicateCustomForm(form.customId, e) : duplicateBaseForm(form, e)}
+          onClick={e => form.isCustom ? duplicateCustomForm(form.customId, e) : duplicateBaseForm(form, e, false)}
           title="Duplicate"
           className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
