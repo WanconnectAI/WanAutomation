@@ -112,6 +112,35 @@ async function initDB() {
     await db.exec(`INSERT INTO form_settings (form_type, form_name) VALUES ('${type}', '${name}') ON CONFLICT DO NOTHING`)
   }
 
+  // Sync Supabase views for all existing custom forms (backfill on startup)
+  try {
+    const existingForms = await db.all('SELECT id, fields FROM custom_forms')
+    for (const form of existingForms) {
+      const fields = JSON.parse(form.fields || '[]')
+      const viewName = `v_form_${form.id}`
+      if (!fields.length) continue
+      const seen = {}
+      const columns = fields.map(f => {
+        const rawName = f.name || f.id || f.label || 'field'
+        let colName = rawName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 50)
+        if (!colName) colName = 'field'
+        if (seen[colName]) { seen[colName]++; colName = `${colName}_${seen[colName]}` } else { seen[colName] = 1 }
+        const jsonKey = (f.name || f.id || f.label || 'field').replace(/'/g, "''")
+        return `  (data::jsonb->>'${jsonKey}') AS "${colName}"`
+      }).join(',\n')
+      await db.pool.query(`
+        CREATE OR REPLACE VIEW ${viewName} AS
+        SELECT id, submitted_at, submitted_by,
+        ${columns}
+        FROM form_submissions WHERE form_type = 'custom_${form.id}'
+        ORDER BY submitted_at DESC
+      `)
+    }
+    if (existingForms.length) console.log(`Synced ${existingForms.length} custom form view(s)`)
+  } catch (err) {
+    console.warn('View sync skipped:', err.message)
+  }
+
   console.log('Database initialised (PostgreSQL)')
 }
 
