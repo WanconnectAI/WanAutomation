@@ -1,7 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
+
+const DEPARTMENTS = [
+  { id: 'accounting', label: 'Accounting',  icon: '📊' },
+  { id: 'audit',      label: 'Audit',       icon: '🔍' },
+  { id: 'consulting', label: 'Consulting',  icon: '💼' },
+  { id: 'taxation',   label: 'Taxation',    icon: '🧾' },
+  { id: 'co-sec',     label: 'Co. Sec',     icon: '📋' },
+  { id: 'internal',   label: 'Internal',    icon: '🏢' },
+]
 
 function UserModal({ user, onClose, onSaved }) {
   const isEdit = !!user
@@ -10,8 +19,18 @@ function UserModal({ user, onClose, onSaved }) {
     password: '',
     confirmPassword: '',
     role: user?.role || 'admin',
+    departments: user?.departments || [],
   })
   const [saving, setSaving] = useState(false)
+
+  const toggleDept = (id) => {
+    setForm(f => ({
+      ...f,
+      departments: f.departments.includes(id)
+        ? f.departments.filter(d => d !== id)
+        : [...f.departments, id],
+    }))
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -22,12 +41,17 @@ function UserModal({ user, onClose, onSaved }) {
     setSaving(true)
     try {
       if (isEdit) {
-        const payload = { role: form.role }
+        const payload = { role: form.role, departments: form.departments }
         if (form.password) payload.password = form.password
         await axios.put(`/api/users/${user.id}`, payload)
         toast.success('User updated')
       } else {
-        await axios.post('/api/users', { username: form.username, password: form.password, role: form.role })
+        await axios.post('/api/users', {
+          username: form.username,
+          password: form.password,
+          role: form.role,
+          departments: form.departments,
+        })
         toast.success(`User "${form.username}" created`)
       }
       onSaved()
@@ -88,8 +112,57 @@ function UserModal({ user, onClose, onSaved }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
             <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} className="input w-full">
               <option value="admin">Admin (full access)</option>
-              <option value="staff">Staff (view only)</option>
+              <option value="staff">Staff (restricted access)</option>
             </select>
+          </div>
+
+          {/* Department AI access */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Department AI Access
+              </label>
+              {form.role === 'admin' ? (
+                <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full">
+                  Admin — all departments
+                </span>
+              ) : (
+                <span className="text-xs text-gray-400">
+                  {form.departments.length} selected
+                </span>
+              )}
+            </div>
+            {form.role === 'admin' ? (
+              <p className="text-xs text-gray-400 italic">Admin role has access to all departments automatically.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                {DEPARTMENTS.map(dept => {
+                  const checked = form.departments.includes(dept.id)
+                  return (
+                    <button
+                      key={dept.id}
+                      type="button"
+                      onClick={() => toggleDept(dept.id)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition text-left
+                        ${checked
+                          ? 'bg-blue-50 border-blue-300 text-blue-700'
+                          : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+                    >
+                      <span className="text-base leading-none">{dept.icon}</span>
+                      <span className="flex-1 text-xs">{dept.label}</span>
+                      <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0
+                        ${checked ? 'bg-blue-600' : 'border border-gray-300'}`}>
+                        {checked && (
+                          <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -177,7 +250,8 @@ export default function UserManagement() {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Username</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Role</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Created</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Dept Access</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Created</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
               </tr>
             </thead>
@@ -202,7 +276,25 @@ export default function UserManagement() {
                       {u.role}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">
+                  <td className="px-4 py-3 hidden md:table-cell">
+                    {u.role === 'admin' ? (
+                      <span className="text-xs text-blue-600 font-medium">All departments</span>
+                    ) : (u.departments || []).length === 0 ? (
+                      <span className="text-xs text-gray-300 italic">None</span>
+                    ) : (
+                      <div className="flex flex-wrap gap-1">
+                        {(u.departments || []).map(d => {
+                          const dept = DEPARTMENTS.find(x => x.id === d)
+                          return dept ? (
+                            <span key={d} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
+                              {dept.icon} {dept.label}
+                            </span>
+                          ) : null
+                        })}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">
                     {new Date(u.created_at).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </td>
                   <td className="px-4 py-3">

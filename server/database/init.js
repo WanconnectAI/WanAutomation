@@ -77,6 +77,9 @@ async function initDB() {
     );
   `)
 
+  // Migrations — add new columns safely
+  try { await db.exec(`ALTER TABLE users ADD COLUMN departments TEXT DEFAULT '[]'`) } catch {}
+
   // Seed admin users if none exist
   const existing = await db.get('SELECT id FROM users LIMIT 1')
   if (!existing) {

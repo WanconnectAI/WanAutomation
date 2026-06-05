@@ -17,6 +17,15 @@ import FormsDashboard from './pages/FormsDashboard'
 import SubmissionsPage from './pages/SubmissionsPage'
 import AutomationDashboard from './pages/AutomationDashboard'
 import ComingSoonPage from './pages/ComingSoonPage'
+import DepartmentPage from './pages/DepartmentPage'
+
+// Guard for department-level access
+function DeptRoute({ deptId, label }) {
+  const { user } = useAuth()
+  const hasAccess = user?.role === 'admin' || (user?.departments || []).includes(deptId)
+  if (!hasAccess) return <Navigate to="/dashboard" replace />
+  return <DepartmentPage deptId={deptId} label={label} />
+}
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -39,6 +48,14 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         {/* Overall */}
         <Route path="dashboard" element={<Dashboard />} />
+
+        {/* Department AI section */}
+        <Route path="dept/accounting"  element={<DeptRoute deptId="accounting"  label="Accounting" />} />
+        <Route path="dept/audit"       element={<DeptRoute deptId="audit"       label="Audit" />} />
+        <Route path="dept/consulting"  element={<DeptRoute deptId="consulting"  label="Consulting" />} />
+        <Route path="dept/taxation"    element={<DeptRoute deptId="taxation"    label="Taxation" />} />
+        <Route path="dept/co-sec"      element={<DeptRoute deptId="co-sec"      label="Co. Sec" />} />
+        <Route path="dept/internal"    element={<DeptRoute deptId="internal"    label="Internal" />} />
 
         {/* Forms section */}
         <Route path="forms/dashboard" element={<FormsDashboard />} />

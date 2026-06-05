@@ -42,6 +42,11 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
   ),
+  dept: (
+    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+    </svg>
+  ),
   chevronDown: (
     <svg className="w-4 h-4 flex-shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -63,6 +68,21 @@ const NAV_STRUCTURE = [
     to: '/dashboard',
     label: 'Overall',
     icon: icons.dashboard,
+  },
+  {
+    type: 'group',
+    id: 'dept-ai',
+    label: 'Department AI',
+    icon: icons.dept,
+    basePath: '/dept',
+    children: [
+      { to: '/dept/accounting', label: 'Accounting',  deptId: 'accounting'  },
+      { to: '/dept/audit',      label: 'Audit',       deptId: 'audit'       },
+      { to: '/dept/consulting', label: 'Consulting',  deptId: 'consulting'  },
+      { to: '/dept/taxation',   label: 'Taxation',    deptId: 'taxation'    },
+      { to: '/dept/co-sec',     label: 'Co. Sec',     deptId: 'co-sec'      },
+      { to: '/dept/internal',   label: 'Internal',    deptId: 'internal'    },
+    ],
   },
   {
     type: 'group',
@@ -205,6 +225,12 @@ export default function Layout() {
       {/* Nav */}
       <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
         {NAV_STRUCTURE.map((item) => {
+          // Hide Department AI group entirely for staff with no department access
+          if (item.id === 'dept-ai' && user?.role !== 'admin') {
+            const accessible = item.children.filter(c => (user?.departments || []).includes(c.deptId))
+            if (accessible.length === 0) return null
+          }
+
           if (item.type === 'link') {
             // Single nav item
             const isActive = item.to === '/dashboard'
@@ -261,7 +287,13 @@ export default function Layout() {
                 {/* Sub-items */}
                 {sidebarOpen && isOpen && (
                   <div className="mt-0.5 ml-3 pl-3 border-l border-gray-200 space-y-0.5">
-                    {item.children.map(child => {
+                    {item.children
+                      .filter(child => {
+                        // Department AI: filter by user's department access
+                        if (!child.deptId) return true
+                        return user?.role === 'admin' || (user?.departments || []).includes(child.deptId)
+                      })
+                      .map(child => {
                       const childActive = isSubItemActive(child)
                       return (
                         <NavLink

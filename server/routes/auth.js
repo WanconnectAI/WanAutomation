@@ -17,21 +17,30 @@ router.post('/login', async (req, res) => {
     const valid = bcrypt.compareSync(password, user.password_hash)
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' })
 
+    const departments = JSON.parse(user.departments || '[]')
     const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '8h' })
-    res.json({ token, user: { id: user.id, username: user.username, role: user.role } })
+    res.json({ token, user: { id: user.id, username: user.username, role: user.role, departments } })
   } catch (err) {
     console.error('Login error:', err)
     res.status(500).json({ error: 'Login failed' })
   }
 })
 
-router.get('/me', (req, res) => {
+router.get('/me', async (req, res) => {
   const authHeader = req.headers.authorization
   if (!authHeader) return res.status(401).json({ error: 'No token' })
   const token = authHeader.split(' ')[1]
   try {
     const decoded = jwt.verify(token, JWT_SECRET)
-    res.json({ user: decoded })
+    // Fetch fresh user data (so department changes apply without re-login)
+    const user = await db.get('SELECT id, username, role, departments FROM users WHERE id = ?', [decoded.id])
+    if (!user) return res.status(401).json({ error: 'User not found' })
+    res.json({ user: {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      departments: JSON.parse(user.departments || '[]'),
+    }})
   } catch {
     res.status(401).json({ error: 'Invalid token' })
   }
