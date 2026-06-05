@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
@@ -120,6 +120,9 @@ export default function FormsAndTables() {
   const [customForms, setCustomForms] = useState([])
   const [loadingSettings, setLoadingSettings] = useState(true)
   const [viewMode, setViewMode] = useState('list') // 'card' | 'list'
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState('name')   // 'name' | 'department' | 'status'
+  const [sortDir, setSortDir] = useState('asc')
 
   const allForms = [
     ...BASE_FORMS,
@@ -135,6 +138,43 @@ export default function FormsAndTables() {
       fieldCount: cf.fields?.length || 0,
     }))
   ]
+
+  const filteredForms = useMemo(() => {
+    let list = [...allForms]
+    // ── Search ──────────────────────────────────────
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      list = list.filter(f =>
+        f.name.toLowerCase().includes(q) ||
+        (f.department || '').toLowerCase().includes(q)
+      )
+    }
+    // ── Sort ────────────────────────────────────────
+    list.sort((a, b) => {
+      if (sortBy === 'status') {
+        const av = formSettings[a.type]?.is_published ? 1 : 0
+        const bv = formSettings[b.type]?.is_published ? 1 : 0
+        return sortDir === 'asc' ? av - bv : bv - av
+      }
+      const av = sortBy === 'department' ? (a.department || '') : a.name
+      const bv = sortBy === 'department' ? (b.department || '') : b.name
+      const cmp = av.localeCompare(bv)
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+    return list
+  }, [allForms, searchQuery, sortBy, sortDir, formSettings])
+
+  const toggleSort = (col) => {
+    if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortBy(col); setSortDir('asc') }
+  }
+
+  const SortIcon = ({ col }) => (
+    <svg className={`w-3 h-3 inline ml-1 transition-transform ${sortBy === col ? 'text-blue-600' : 'text-gray-300'} ${sortBy === col && sortDir === 'desc' ? 'rotate-180' : ''}`}
+      fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+    </svg>
+  )
 
   const loadAllSettings = async () => {
     try {
@@ -295,12 +335,13 @@ export default function FormsAndTables() {
   return (
     <div className="space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Forms & Tables</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage form submissions and access all form types</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Forms & Tables</h1>
+            <p className="text-gray-500 text-sm mt-1">Manage form submissions and access all form types</p>
+          </div>
+          <div className="flex items-center gap-2">
           {/* View toggle */}
           <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-0.5">
             <button
@@ -330,16 +371,64 @@ export default function FormsAndTables() {
             Create Form
           </button>
         </div>
+
+        {/* Search + Sort bar */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Search input */}
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search by form name or department…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="input-field pl-9 text-sm py-2"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            )}
+          </div>
+
+          {/* Sort controls */}
+          <div className="flex items-center gap-1.5 text-sm">
+            <span className="text-gray-400 text-xs font-medium">Sort:</span>
+            {[
+              { key: 'name', label: 'Name' },
+              { key: 'department', label: 'Department' },
+              { key: 'status', label: 'Status' },
+            ].map(opt => (
+              <button key={opt.key} onClick={() => toggleSort(opt.key)}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition
+                  ${sortBy === opt.key ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}>
+                {opt.label}
+                {sortBy === opt.key && (
+                  <svg className={`w-3 h-3 transition-transform ${sortDir === 'desc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Results count */}
+          {searchQuery && (
+            <span className="text-xs text-gray-400 ml-1">{filteredForms.length} result{filteredForms.length !== 1 ? 's' : ''}</span>
+          )}
+        </div>
       </div>
 
-      {allForms.length === 0 ? (
+      {filteredForms.length === 0 ? (
         <div className="card p-12 text-center border-2 border-dashed border-gray-200">
-          <p className="text-gray-400">No forms yet.</p>
+          <p className="text-gray-400">{searchQuery ? 'No forms match your search.' : 'No forms yet.'}</p>
         </div>
       ) : viewMode === 'card' ? (
         /* ── CARD VIEW ── */
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {allForms.map(form => {
+          {filteredForms.map(form => {
             const c = getC(form.color)
             const settings = formSettings[form.type]
             const isPublished = !!settings?.is_published
@@ -413,15 +502,27 @@ export default function FormsAndTables() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Form</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Department</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Status</th>
+                <th className="px-4 py-3 text-left">
+                  <button onClick={() => toggleSort('name')} className="flex items-center gap-1 text-xs font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-700 transition">
+                    Form <SortIcon col="name" />
+                  </button>
+                </th>
+                <th className="px-4 py-3 text-left">
+                  <button onClick={() => toggleSort('department')} className="flex items-center gap-1 text-xs font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-700 transition">
+                    Department <SortIcon col="department" />
+                  </button>
+                </th>
+                <th className="px-4 py-3 text-left hidden md:table-cell">
+                  <button onClick={() => toggleSort('status')} className="flex items-center gap-1 text-xs font-semibold text-gray-500 uppercase tracking-wide hover:text-gray-700 transition">
+                    Status <SortIcon col="status" />
+                  </button>
+                </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Public Link</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {allForms.map(form => {
+              {filteredForms.map(form => {
                 const c = getC(form.color)
                 const settings = formSettings[form.type]
                 const isPublished = !!settings?.is_published

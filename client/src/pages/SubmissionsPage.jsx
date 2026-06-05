@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
@@ -208,47 +208,87 @@ function DeleteModal({ onConfirm, onCancel }) {
 
 // ── Form Selector ─────────────────────────────────────────────────────────────
 function FormSelector({ customForms, onSelect }) {
+  const [q, setQ] = useState('')
+
+  const filteredBase = BASE_FORMS.filter(f =>
+    !q || f.label.toLowerCase().includes(q.toLowerCase())
+  )
+  const filteredCustom = customForms.filter(f =>
+    !q || f.name.toLowerCase().includes(q.toLowerCase())
+  )
+  const totalVisible = filteredBase.length + filteredCustom.length
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Submission Details</h1>
-        <p className="text-gray-500 text-sm mt-1">Select a form below to view its submissions</p>
-      </div>
-
-      {/* Base Forms */}
-      <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Base Forms</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {BASE_FORMS.map(form => (
-            <button key={form.value} onClick={() => onSelect(form.value, form.label)}
-              className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left hover:shadow-md transition-all group ${form.color}`}>
-              <span className="text-3xl">{form.icon}</span>
-              <div>
-                <p className="font-semibold text-sm">{form.label}</p>
-                <p className="text-xs opacity-70 mt-0.5">View submissions →</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Custom Forms */}
-      {customForms.length > 0 && (
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Custom Forms</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {customForms.map(cf => (
-              <button key={cf.id} onClick={() => onSelect(`custom_${cf.id}`, cf.name)}
-                className="flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 bg-gray-50 text-left hover:shadow-md hover:border-blue-300 hover:bg-blue-50 transition-all">
-                <span className="text-3xl">{cf.icon || '📋'}</span>
-                <div>
-                  <p className="font-semibold text-sm text-gray-800">{cf.name}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">View submissions →</p>
-                </div>
-              </button>
-            ))}
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Submission Details</h1>
+          <p className="text-gray-500 text-sm mt-1">Select a form below to view its submissions</p>
         </div>
+        {/* Selector search */}
+        <div className="relative min-w-[240px]">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search forms…"
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            className="input-field pl-9 text-sm py-2 w-full"
+          />
+          {q && (
+            <button onClick={() => setQ('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {totalVisible === 0 ? (
+        <div className="card p-10 text-center border-2 border-dashed border-gray-200">
+          <p className="text-gray-400">No forms match "{q}"</p>
+        </div>
+      ) : (
+        <>
+          {/* Base Forms */}
+          {filteredBase.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Base Forms</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {filteredBase.map(form => (
+                  <button key={form.value} onClick={() => onSelect(form.value, form.label)}
+                    className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left hover:shadow-md transition-all group ${form.color}`}>
+                    <span className="text-3xl">{form.icon}</span>
+                    <div>
+                      <p className="font-semibold text-sm">{form.label}</p>
+                      <p className="text-xs opacity-70 mt-0.5">View submissions →</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Custom Forms */}
+          {filteredCustom.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Custom Forms</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {filteredCustom.map(cf => (
+                  <button key={cf.id} onClick={() => onSelect(`custom_${cf.id}`, cf.name)}
+                    className="flex items-center gap-3 p-4 rounded-xl border-2 border-gray-200 bg-gray-50 text-left hover:shadow-md hover:border-blue-300 hover:bg-blue-50 transition-all">
+                    <span className="text-3xl">{cf.icon || '📋'}</span>
+                    <div>
+                      <p className="font-semibold text-sm text-gray-800">{cf.name}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">View submissions →</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
@@ -267,6 +307,10 @@ export default function SubmissionsPage() {
   const [loading, setLoading] = useState(false)
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
+  const [searchInput, setSearchInput] = useState('')    // raw text in search box
+  const [search, setSearch] = useState('')              // debounced — sent to API
+  const [sortCol, setSortCol] = useState('')            // column key being sorted
+  const [sortDir, setSortDir] = useState('asc')         // 'asc' | 'desc'
   const [viewModal, setViewModal] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
 
@@ -274,6 +318,12 @@ export default function SubmissionsPage() {
   useEffect(() => {
     axios.get('/api/custom-forms').then(r => setCustomForms(r.data || [])).catch(() => {})
   }, [])
+
+  // Debounce search input → search state (400 ms)
+  useEffect(() => {
+    const t = setTimeout(() => { setSearch(searchInput); setPage(1) }, 400)
+    return () => clearTimeout(t)
+  }, [searchInput])
 
   // Build columns when form type changes
   useEffect(() => {
@@ -296,7 +346,7 @@ export default function SubmissionsPage() {
     }
   }, [selectedType])
 
-  // Fetch submissions when form/page/dates change
+  // Fetch submissions when form/page/dates/search change
   const fetchSubmissions = useCallback(async () => {
     if (!selectedType) return
     setLoading(true)
@@ -304,6 +354,7 @@ export default function SubmissionsPage() {
       const params = { page, limit: PAGE_SIZE }
       if (dateFrom) params.date_from = dateFrom
       if (dateTo) params.date_to = dateTo
+      if (search) params.search = search
       const r = await axios.get(`/api/forms/submissions/${selectedType}`, { params })
       setSubmissions(r.data.submissions || [])
       setTotal(r.data.total || 0)
@@ -313,7 +364,7 @@ export default function SubmissionsPage() {
     } finally {
       setLoading(false)
     }
-  }, [selectedType, page, dateFrom, dateTo])
+  }, [selectedType, page, dateFrom, dateTo, search])
 
   useEffect(() => { fetchSubmissions() }, [fetchSubmissions])
 
@@ -323,6 +374,10 @@ export default function SubmissionsPage() {
     setPage(1)
     setDateFrom('')
     setDateTo('')
+    setSearchInput('')
+    setSearch('')
+    setSortCol('')
+    setSortDir('asc')
     setSubmissions([])
     setTotal(0)
   }
@@ -334,7 +389,29 @@ export default function SubmissionsPage() {
     setSubmissions([])
     setTotal(0)
     setPage(1)
+    setSearchInput('')
+    setSearch('')
+    setSortCol('')
+    setSortDir('asc')
   }
+
+  const toggleSort = (key) => {
+    if (sortCol === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortCol(key); setSortDir('asc') }
+  }
+
+  // Client-side sort of current page data
+  const sortedSubmissions = useMemo(() => {
+    if (!sortCol) return submissions
+    return [...submissions].sort((a, b) => {
+      const av = getCellValue(a.data, sortCol)
+      const bv = getCellValue(b.data, sortCol)
+      if (av === '—' && bv !== '—') return 1
+      if (bv === '—' && av !== '—') return -1
+      const cmp = av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' })
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [submissions, sortCol, sortDir])
 
   const handleDelete = async () => {
     try {
@@ -397,21 +474,45 @@ export default function SubmissionsPage() {
         </button>
       </div>
 
-      {/* Date filters */}
+      {/* Search + Date filters */}
       <div className="card p-4">
         <div className="flex flex-wrap items-end gap-3">
+          {/* Search */}
+          <div className="flex-1 min-w-[200px]">
+            <label className="label text-xs">Search Submissions</label>
+            <div className="relative">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search across all fields…"
+                value={searchInput}
+                onChange={e => setSearchInput(e.target.value)}
+                className="input-field pl-9 text-sm"
+              />
+              {searchInput && (
+                <button onClick={() => { setSearchInput(''); setSearch('') }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              )}
+            </div>
+          </div>
+          {/* Date from */}
           <div>
             <label className="label text-xs">Date From</label>
             <input type="date" value={dateFrom} onChange={e => { setDateFrom(e.target.value); setPage(1) }} className="input-field text-sm" />
           </div>
+          {/* Date to */}
           <div>
             <label className="label text-xs">Date To</label>
             <input type="date" value={dateTo} onChange={e => { setDateTo(e.target.value); setPage(1) }} className="input-field text-sm" />
           </div>
-          {(dateFrom || dateTo) && (
-            <button onClick={() => { setDateFrom(''); setDateTo(''); setPage(1) }}
+          {(dateFrom || dateTo || search) && (
+            <button onClick={() => { setDateFrom(''); setDateTo(''); setSearchInput(''); setSearch(''); setPage(1) }}
               className="text-sm text-gray-500 hover:text-red-600 px-3 py-2 rounded-lg hover:bg-red-50 transition">
-              ✕ Clear
+              ✕ Clear all
             </button>
           )}
         </div>
@@ -436,7 +537,19 @@ export default function SubmissionsPage() {
                 <tr>
                   <th className="px-4 py-3 text-left w-12">#</th>
                   {columns.map(col => (
-                    <th key={col.key} className="px-4 py-3 text-left whitespace-nowrap">{col.label}</th>
+                    <th key={col.key} className="px-4 py-3 text-left whitespace-nowrap">
+                      <button onClick={() => toggleSort(col.key)}
+                        className={`flex items-center gap-1 font-semibold uppercase tracking-wide transition hover:text-gray-800
+                          ${sortCol === col.key ? 'text-blue-600' : 'text-gray-500'}`}>
+                        {col.label}
+                        <svg className={`w-3 h-3 flex-shrink-0 transition-transform
+                          ${sortCol === col.key ? 'opacity-100' : 'opacity-30'}
+                          ${sortCol === col.key && sortDir === 'desc' ? 'rotate-180' : ''}`}
+                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+                        </svg>
+                      </button>
+                    </th>
                   ))}
                   <th className="px-4 py-3 text-left whitespace-nowrap">Submitted By</th>
                   <th className="px-4 py-3 text-left whitespace-nowrap">Date & Time</th>
@@ -444,7 +557,7 @@ export default function SubmissionsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {submissions.map((sub, idx) => (
+                {sortedSubmissions.map((sub, idx) => (
                   <tr key={sub.id} className="hover:bg-gray-50 transition">
                     <td className="px-4 py-3 text-gray-400 text-xs">{(page - 1) * PAGE_SIZE + idx + 1}</td>
                     {columns.map(col => (
