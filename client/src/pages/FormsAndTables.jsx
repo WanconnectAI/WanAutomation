@@ -119,7 +119,7 @@ export default function FormsAndTables() {
   const [formSettings, setFormSettings] = useState({})
   const [customForms, setCustomForms] = useState([])
   const [loadingSettings, setLoadingSettings] = useState(true)
-  const [viewMode, setViewMode] = useState('card') // 'card' | 'list'
+  const [viewMode, setViewMode] = useState('list') // 'card' | 'list'
 
   const allForms = [
     ...BASE_FORMS,
