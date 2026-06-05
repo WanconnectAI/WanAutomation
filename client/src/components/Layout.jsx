@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { usePermission } from '../hooks/usePermission'
 import toast from 'react-hot-toast'
 
 // ---- Icons ----
@@ -68,6 +69,7 @@ const NAV_STRUCTURE = [
     to: '/dashboard',
     label: 'Overall',
     icon: icons.dashboard,
+    permKey: 'dashboard',
   },
   {
     type: 'group',
@@ -76,12 +78,12 @@ const NAV_STRUCTURE = [
     icon: icons.dept,
     basePath: '/dept',
     children: [
-      { to: '/dept/accounting', label: 'Accounting',  deptId: 'accounting'  },
-      { to: '/dept/audit',      label: 'Audit',       deptId: 'audit'       },
-      { to: '/dept/consulting', label: 'Consulting',  deptId: 'consulting'  },
-      { to: '/dept/taxation',   label: 'Taxation',    deptId: 'taxation'    },
-      { to: '/dept/co-sec',     label: 'Co. Sec',     deptId: 'co-sec'      },
-      { to: '/dept/internal',   label: 'Internal',    deptId: 'internal'    },
+      { to: '/dept/accounting', label: 'Accounting', permKey: 'dept.accounting' },
+      { to: '/dept/audit',      label: 'Audit',      permKey: 'dept.audit'      },
+      { to: '/dept/consulting', label: 'Consulting', permKey: 'dept.consulting' },
+      { to: '/dept/taxation',   label: 'Taxation',   permKey: 'dept.taxation'   },
+      { to: '/dept/co-sec',     label: 'Co. Sec',    permKey: 'dept.co-sec'     },
+      { to: '/dept/internal',   label: 'Internal',   permKey: 'dept.internal'   },
     ],
   },
   {
@@ -91,9 +93,9 @@ const NAV_STRUCTURE = [
     icon: icons.forms,
     basePath: '/forms',
     children: [
-      { to: '/forms/dashboard', label: 'Forms Dashboard' },
-      { to: '/forms', label: 'Forms', exact: true },
-      { to: '/forms/submissions', label: 'Submission Details' },
+      { to: '/forms/dashboard',   label: 'Forms Dashboard',    permKey: 'forms.dashboard'   },
+      { to: '/forms',             label: 'Forms', exact: true, permKey: 'forms.list'        },
+      { to: '/forms/submissions', label: 'Submission Details', permKey: 'forms.submissions' },
     ],
   },
   {
@@ -103,9 +105,9 @@ const NAV_STRUCTURE = [
     icon: icons.automation,
     basePath: '/automation',
     children: [
-      { to: '/automation/dashboard', label: 'Automation Dashboard' },
-      { to: '/automation/workflows', label: 'Automation Workflows' },
-      { to: '/automation/flows', label: 'Automation Flows' },
+      { to: '/automation/dashboard',  label: 'Automation Dashboard', permKey: 'automation.dashboard'  },
+      { to: '/automation/workflows',  label: 'Automation Workflows', permKey: 'automation.workflows'  },
+      { to: '/automation/flows',      label: 'Automation Flows',     permKey: 'automation.flows'      },
     ],
   },
   {
@@ -116,9 +118,9 @@ const NAV_STRUCTURE = [
     basePath: '/student-portal',
     comingSoon: true,
     children: [
-      { to: '/student-portal/dashboard', label: 'Student Dashboard' },
-      { to: '/student-portal/students', label: 'Student Listing' },
-      { to: '/student-portal/courses', label: 'Course Listing' },
+      { to: '/student-portal/dashboard',   label: 'Student Dashboard'  },
+      { to: '/student-portal/students',    label: 'Student Listing'    },
+      { to: '/student-portal/courses',     label: 'Course Listing'     },
       { to: '/student-portal/enrollments', label: 'Enrollment Details' },
     ],
   },
@@ -134,12 +136,14 @@ const NAV_STRUCTURE = [
     to: '/users',
     label: 'User Management',
     icon: icons.users,
+    permKey: 'users',
   },
   {
     type: 'link',
     to: '/settings',
     label: 'Settings',
     icon: icons.settings,
+    permKey: 'settings',
   },
 ]
 
@@ -164,6 +168,7 @@ function ChevronIcon({ open }) {
 
 export default function Layout() {
   const { user, logout } = useAuth()
+  const { canView, isAdmin } = usePermission()
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -225,11 +230,15 @@ export default function Layout() {
       {/* Nav */}
       <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
         {NAV_STRUCTURE.map((item) => {
-          // Hide Department AI group entirely for staff with no department access
-          if (item.id === 'dept-ai' && user?.role !== 'admin') {
-            const accessible = item.children.filter(c => (user?.departments || []).includes(c.deptId))
-            if (accessible.length === 0) return null
+          // For groups: filter visible children first. Hide group if no children visible.
+          if (item.type === 'group' && !item.comingSoon) {
+            const visibleChildren = item.children.filter(c =>
+              !c.permKey || isAdmin || canView(c.permKey)
+            )
+            if (visibleChildren.length === 0 && !isAdmin) return null
           }
+          // For single links with permKey: hide if no view permission
+          if (item.type === 'link' && item.permKey && !isAdmin && !canView(item.permKey)) return null
 
           if (item.type === 'link') {
             // Single nav item
@@ -288,11 +297,7 @@ export default function Layout() {
                 {sidebarOpen && isOpen && (
                   <div className="mt-0.5 ml-3 pl-3 border-l border-gray-200 space-y-0.5">
                     {item.children
-                      .filter(child => {
-                        // Department AI: filter by user's department access
-                        if (!child.deptId) return true
-                        return user?.role === 'admin' || (user?.departments || []).includes(child.deptId)
-                      })
+                      .filter(child => !child.permKey || isAdmin || canView(child.permKey))
                       .map(child => {
                       const childActive = isSubItemActive(child)
                       return (

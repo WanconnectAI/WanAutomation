@@ -1,36 +1,134 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
+import { PERMISSION_MODULES, ACTION_COLS, GROUP_COLORS, getDefaultPermissions } from '../constants/permissions'
 
-const DEPARTMENTS = [
-  { id: 'accounting', label: 'Accounting',  icon: '📊' },
-  { id: 'audit',      label: 'Audit',       icon: '🔍' },
-  { id: 'consulting', label: 'Consulting',  icon: '💼' },
-  { id: 'taxation',   label: 'Taxation',    icon: '🧾' },
-  { id: 'co-sec',     label: 'Co. Sec',     icon: '📋' },
-  { id: 'internal',   label: 'Internal',    icon: '🏢' },
-]
+// ── Permission Matrix ─────────────────────────────────────────────────────────
+function PermissionMatrix({ permissions, onChange, disabled }) {
+  const toggle = (moduleKey, action) => {
+    const updated = {
+      ...permissions,
+      [moduleKey]: {
+        ...(permissions[moduleKey] || {}),
+        [action]: !(permissions[moduleKey]?.[action]),
+      },
+    }
+    onChange(updated)
+  }
 
+  const toggleGroupView = (groupItems, value) => {
+    const updated = { ...permissions }
+    groupItems.forEach(item => {
+      if (item.actions.includes('view')) {
+        updated[item.key] = { ...(updated[item.key] || {}), view: value }
+        // If removing view, remove all other permissions too
+        if (!value) {
+          item.actions.forEach(a => { updated[item.key][a] = false })
+        }
+      }
+    })
+    onChange(updated)
+  }
+
+  const allGroupViewed = (groupItems) =>
+    groupItems.every(item => permissions[item.key]?.view === true)
+
+  return (
+    <div className="border border-gray-200 rounded-xl overflow-hidden text-xs">
+      {/* Column headers */}
+      <div className="grid bg-gray-50 border-b border-gray-200 sticky top-0" style={{ gridTemplateColumns: '1fr repeat(4, 56px)' }}>
+        <div className="px-3 py-2 font-semibold text-gray-500 uppercase tracking-wide">Module</div>
+        {ACTION_COLS.map(a => (
+          <div key={a} className="py-2 text-center font-semibold text-gray-500 uppercase tracking-wide capitalize">{a}</div>
+        ))}
+      </div>
+
+      {PERMISSION_MODULES.map(group => {
+        const gc = GROUP_COLORS[group.color] || GROUP_COLORS.blue
+        const allViewed = allGroupViewed(group.items)
+        return (
+          <div key={group.group}>
+            {/* Group header row */}
+            <div className={`grid items-center border-b ${gc.header} border-opacity-50`}
+              style={{ gridTemplateColumns: '1fr repeat(4, 56px)' }}>
+              <div className="px-3 py-1.5 font-semibold text-xs flex items-center gap-2">
+                {group.group}
+                {!disabled && (
+                  <button type="button"
+                    onClick={() => toggleGroupView(group.items, !allViewed)}
+                    className="text-[10px] font-normal underline opacity-60 hover:opacity-100">
+                    {allViewed ? 'hide all' : 'show all'}
+                  </button>
+                )}
+              </div>
+              {ACTION_COLS.map(a => <div key={a} />)}
+            </div>
+
+            {/* Module rows */}
+            {group.items.map(item => {
+              const perms = permissions[item.key] || {}
+              const hasView = perms.view === true
+              return (
+                <div key={item.key}
+                  className={`grid items-center border-b border-gray-100 last:border-0 transition-colors ${hasView ? 'bg-white' : 'bg-gray-50/50'}`}
+                  style={{ gridTemplateColumns: '1fr repeat(4, 56px)' }}>
+                  <div className={`px-3 py-2 flex items-center gap-1.5 ${!hasView ? 'opacity-40' : ''}`}>
+                    <span className="text-sm">{item.icon}</span>
+                    <span className="font-medium text-gray-700">{item.label}</span>
+                  </div>
+                  {ACTION_COLS.map(action => {
+                    const supported = item.actions.includes(action)
+                    const checked = perms[action] === true
+                    const isViewCol = action === 'view'
+                    const blocked = !isViewCol && !hasView // can't grant non-view if view is off
+                    return (
+                      <div key={action} className="flex items-center justify-center py-2">
+                        {supported ? (
+                          <button
+                            type="button"
+                            disabled={disabled || blocked}
+                            onClick={() => toggle(item.key, action)}
+                            title={blocked ? 'Enable View first' : `${checked ? 'Remove' : 'Grant'} ${action}`}
+                            className={`w-5 h-5 rounded flex items-center justify-center border transition
+                              ${disabled || blocked ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}
+                              ${checked && !blocked
+                                ? `${gc.tick} border-transparent`
+                                : 'bg-white border-gray-300'}`}
+                          >
+                            {checked && !blocked && (
+                              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </button>
+                        ) : (
+                          <span className="w-5 h-5 flex items-center justify-center text-gray-200 text-base">—</span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── User Modal ────────────────────────────────────────────────────────────────
 function UserModal({ user, onClose, onSaved }) {
   const isEdit = !!user
   const [form, setForm] = useState({
     username: user?.username || '',
     password: '',
     confirmPassword: '',
-    role: user?.role || 'admin',
-    departments: user?.departments || [],
+    role: user?.role || 'staff',
+    permissions: user?.permissions || getDefaultPermissions(),
   })
   const [saving, setSaving] = useState(false)
-
-  const toggleDept = (id) => {
-    setForm(f => ({
-      ...f,
-      departments: f.departments.includes(id)
-        ? f.departments.filter(d => d !== id)
-        : [...f.departments, id],
-    }))
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -41,7 +139,7 @@ function UserModal({ user, onClose, onSaved }) {
     setSaving(true)
     try {
       if (isEdit) {
-        const payload = { role: form.role, departments: form.departments }
+        const payload = { role: form.role, permissions: form.permissions }
         if (form.password) payload.password = form.password
         await axios.put(`/api/users/${user.id}`, payload)
         toast.success('User updated')
@@ -50,7 +148,7 @@ function UserModal({ user, onClose, onSaved }) {
           username: form.username,
           password: form.password,
           role: form.role,
-          departments: form.departments,
+          permissions: form.permissions,
         })
         toast.success(`User "${form.username}" created`)
       }
@@ -64,10 +162,11 @@ function UserModal({ user, onClose, onSaved }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+    <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto"
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
-        <div className="flex items-center justify-between p-5 border-b">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl my-6">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b sticky top-0 bg-white rounded-t-xl z-10">
           <h3 className="font-semibold text-gray-900">{isEdit ? `Edit User — ${user.username}` : 'Create New User'}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,96 +175,85 @@ function UserModal({ user, onClose, onSaved }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          {!isEdit && (
+        <form onSubmit={handleSubmit} className="p-5 space-y-5">
+          {/* Basic fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {!isEdit && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" required autoFocus value={form.username}
+                  onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
+                  className="input w-full" placeholder="e.g. john.doe" />
+              </div>
+            )}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-              <input
-                type="text" required autoFocus
-                value={form.username} onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
-                className="input w-full" placeholder="e.g. john.doe"
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} className="input w-full">
+                <option value="admin">Admin — full access (no restrictions)</option>
+                <option value="staff">Staff — custom permissions below</option>
+              </select>
             </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {isEdit ? 'New Password (leave blank to keep current)' : 'Password'}
-            </label>
-            <input
-              type="password"
-              value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-              className="input w-full" placeholder={isEdit ? 'Leave blank to keep current' : 'Min. 6 characters'}
-            />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-            <input
-              type="password"
-              value={form.confirmPassword} onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
-              className="input w-full" placeholder="Re-enter password"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {isEdit ? 'New Password (leave blank to keep)' : 'Password'}
+              </label>
+              <input type="password" value={form.password}
+                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                className="input w-full" placeholder={isEdit ? 'Leave blank to keep current' : 'Min. 6 characters'} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <input type="password" value={form.confirmPassword}
+                onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
+                className="input w-full" placeholder="Re-enter password" />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-            <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} className="input w-full">
-              <option value="admin">Admin (full access)</option>
-              <option value="staff">Staff (restricted access)</option>
-            </select>
-          </div>
-
-          {/* Department AI access */}
+          {/* Permission matrix */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Department AI Access
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Access Permissions</label>
               {form.role === 'admin' ? (
                 <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full">
-                  Admin — all departments
+                  Admin — all permissions granted automatically
                 </span>
               ) : (
-                <span className="text-xs text-gray-400">
-                  {form.departments.length} selected
-                </span>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => {
+                    const all = {}
+                    PERMISSION_MODULES.forEach(g => g.items.forEach(item => {
+                      all[item.key] = {}
+                      item.actions.forEach(a => { all[item.key][a] = true })
+                    }))
+                    setForm(f => ({ ...f, permissions: all }))
+                  }} className="text-xs text-green-600 hover:text-green-800 font-medium">Grant all</button>
+                  <span className="text-gray-200">|</span>
+                  <button type="button" onClick={() => setForm(f => ({ ...f, permissions: getDefaultPermissions() }))}
+                    className="text-xs text-red-500 hover:text-red-700 font-medium">Revoke all</button>
+                </div>
               )}
             </div>
+
             {form.role === 'admin' ? (
-              <p className="text-xs text-gray-400 italic">Admin role has access to all departments automatically.</p>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                {DEPARTMENTS.map(dept => {
-                  const checked = form.departments.includes(dept.id)
-                  return (
-                    <button
-                      key={dept.id}
-                      type="button"
-                      onClick={() => toggleDept(dept.id)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition text-left
-                        ${checked
-                          ? 'bg-blue-50 border-blue-300 text-blue-700'
-                          : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                    >
-                      <span className="text-base leading-none">{dept.icon}</span>
-                      <span className="flex-1 text-xs">{dept.label}</span>
-                      <div className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0
-                        ${checked ? 'bg-blue-600' : 'border border-gray-300'}`}>
-                        {checked && (
-                          <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                    </button>
-                  )
-                })}
+              <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700 flex items-center gap-2">
+                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Admin has full access to all modules, create, edit, delete, and view.
               </div>
+            ) : (
+              <PermissionMatrix
+                permissions={form.permissions}
+                onChange={perms => setForm(f => ({ ...f, permissions: perms }))}
+                disabled={false}
+              />
             )}
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-1">
             <button type="button" onClick={onClose} className="btn-secondary flex-1">Cancel</button>
             <button type="submit" disabled={saving}
               className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-60 text-sm">
@@ -178,11 +266,38 @@ function UserModal({ user, onClose, onSaved }) {
   )
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function PermissionSummary({ user }) {
+  if (user.role === 'admin') {
+    return <span className="text-xs text-blue-600 font-medium">Full access</span>
+  }
+  const perms = user.permissions || {}
+  const granted = Object.entries(perms).filter(([, v]) => v.view === true)
+  if (granted.length === 0) return <span className="text-xs text-gray-300 italic">No access</span>
+  return (
+    <div className="flex flex-wrap gap-1 max-w-xs">
+      {granted.slice(0, 4).map(([key]) => {
+        const allMods = PERMISSION_MODULES.flatMap(g => g.items)
+        const mod = allMods.find(m => m.key === key)
+        return mod ? (
+          <span key={key} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">
+            {mod.icon} {mod.label}
+          </span>
+        ) : null
+      })}
+      {granted.length > 4 && (
+        <span className="text-[10px] text-gray-400">+{granted.length - 4} more</span>
+      )}
+    </div>
+  )
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
 export default function UserManagement() {
   const { user: currentUser } = useAuth()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
-  const [modal, setModal] = useState(null) // null | 'create' | {user object}
+  const [modal, setModal] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
 
   const fetchUsers = async () => {
@@ -214,12 +329,12 @@ export default function UserManagement() {
     : 'bg-gray-100 text-gray-600'
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage portal login accounts and access roles</p>
+          <p className="text-sm text-gray-500 mt-0.5">Manage login accounts, roles, and module access permissions</p>
         </div>
         <button onClick={() => setModal('create')}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
@@ -231,11 +346,11 @@ export default function UserManagement() {
       </div>
 
       {/* Info banner */}
-      <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 flex gap-3 text-sm text-amber-800">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex gap-3 text-sm text-blue-800">
         <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span>Users with <strong>Admin</strong> role have full access. <strong>Staff</strong> role is reserved for future view-only access. Change the default passwords before going live.</span>
+        <span><strong>Admin</strong> role has full access to everything. <strong>Staff</strong> role can be restricted by module — set View, Create, Edit, Delete per section.</span>
       </div>
 
       {/* Users table */}
@@ -250,7 +365,7 @@ export default function UserManagement() {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Username</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Role</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Dept Access</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Access Summary</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Created</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
               </tr>
@@ -277,22 +392,7 @@ export default function UserManagement() {
                     </span>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell">
-                    {u.role === 'admin' ? (
-                      <span className="text-xs text-blue-600 font-medium">All departments</span>
-                    ) : (u.departments || []).length === 0 ? (
-                      <span className="text-xs text-gray-300 italic">None</span>
-                    ) : (
-                      <div className="flex flex-wrap gap-1">
-                        {(u.departments || []).map(d => {
-                          const dept = DEPARTMENTS.find(x => x.id === d)
-                          return dept ? (
-                            <span key={d} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
-                              {dept.icon} {dept.label}
-                            </span>
-                          ) : null
-                        })}
-                      </div>
-                    )}
+                    <PermissionSummary user={u} />
                   </td>
                   <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">
                     {new Date(u.created_at).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -332,7 +432,6 @@ export default function UserManagement() {
           Default credentials — change before going live
         </p>
         <p className="text-xs text-red-600 font-mono">admin / admin123 &nbsp;·&nbsp; opsmanager / ops456</p>
-        <p className="text-xs">Click <strong>Edit</strong> on each user and set a strong password.</p>
       </div>
 
       {/* Create / Edit modal */}

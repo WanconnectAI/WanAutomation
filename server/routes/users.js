@@ -7,8 +7,8 @@ const router = express.Router()
 
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const users = await db.all('SELECT id, username, role, departments, created_at FROM users ORDER BY created_at ASC')
-    res.json(users.map(u => ({ ...u, departments: JSON.parse(u.departments || '[]') })))
+    const users = await db.all('SELECT id, username, role, permissions, created_at FROM users ORDER BY created_at ASC')
+    res.json(users.map(u => ({ ...u, permissions: JSON.parse(u.permissions || '{}') })))
   } catch (err) {
     res.status(500).json({ error: 'Failed to load users' })
   }
@@ -16,7 +16,7 @@ router.get('/', authMiddleware, async (req, res) => {
 
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { username, password, role = 'admin', departments = [] } = req.body
+    const { username, password, role = 'admin', permissions = {} } = req.body
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' })
     if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' })
 
@@ -24,12 +24,12 @@ router.post('/', authMiddleware, async (req, res) => {
     if (existing) return res.status(409).json({ error: 'Username already exists' })
 
     const hash = bcrypt.hashSync(password, 10)
-    const deptsJson = JSON.stringify(Array.isArray(departments) ? departments : [])
+    const permsJson = JSON.stringify(typeof permissions === 'object' ? permissions : {})
     const result = await db.insert(
-      'INSERT INTO users (username, password_hash, role, departments) VALUES (?, ?, ?, ?)',
-      [username, hash, role, deptsJson]
+      'INSERT INTO users (username, password_hash, role, permissions) VALUES (?, ?, ?, ?)',
+      [username, hash, role, permsJson]
     )
-    res.json({ id: result.lastInsertRowid, username, role, departments })
+    res.json({ id: result.lastInsertRowid, username, role, permissions })
   } catch (err) {
     res.status(500).json({ error: 'Failed to create user' })
   }
@@ -47,9 +47,9 @@ router.put('/:id', authMiddleware, async (req, res) => {
       await db.run('UPDATE users SET password_hash = ? WHERE id = ?', [hash, req.params.id])
     }
     if (role) await db.run('UPDATE users SET role = ? WHERE id = ?', [role, req.params.id])
-    if (req.body.departments !== undefined) {
-      const deptsJson = JSON.stringify(Array.isArray(req.body.departments) ? req.body.departments : [])
-      await db.run('UPDATE users SET departments = ? WHERE id = ?', [deptsJson, req.params.id])
+    if (req.body.permissions !== undefined) {
+      const permsJson = JSON.stringify(typeof req.body.permissions === 'object' ? req.body.permissions : {})
+      await db.run('UPDATE users SET permissions = ? WHERE id = ?', [permsJson, req.params.id])
     }
     res.json({ success: true })
   } catch (err) {

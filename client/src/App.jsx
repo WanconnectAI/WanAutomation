@@ -18,13 +18,22 @@ import SubmissionsPage from './pages/SubmissionsPage'
 import AutomationDashboard from './pages/AutomationDashboard'
 import ComingSoonPage from './pages/ComingSoonPage'
 import DepartmentPage from './pages/DepartmentPage'
+import { usePermission } from './hooks/usePermission'
 
-// Guard for department-level access
-function DeptRoute({ deptId, label }) {
-  const { user } = useAuth()
-  const hasAccess = user?.role === 'admin' || (user?.departments || []).includes(deptId)
-  if (!hasAccess) return <Navigate to="/dashboard" replace />
-  return <DepartmentPage deptId={deptId} label={label} />
+// Generic permission-gated route — redirects to dashboard if user can't view this module
+function PermRoute({ permKey, children }) {
+  const { canView, isAdmin } = usePermission()
+  if (!isAdmin && !canView(permKey)) return <Navigate to="/dashboard" replace />
+  return children
+}
+
+// Department page wrapper with permission guard
+function DeptRoute({ deptId, permKey, label }) {
+  return (
+    <PermRoute permKey={permKey}>
+      <DepartmentPage deptId={deptId} label={label} />
+    </PermRoute>
+  )
 }
 
 function ProtectedRoute({ children }) {
@@ -50,12 +59,12 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
 
         {/* Department AI section */}
-        <Route path="dept/accounting"  element={<DeptRoute deptId="accounting"  label="Accounting" />} />
-        <Route path="dept/audit"       element={<DeptRoute deptId="audit"       label="Audit" />} />
-        <Route path="dept/consulting"  element={<DeptRoute deptId="consulting"  label="Consulting" />} />
-        <Route path="dept/taxation"    element={<DeptRoute deptId="taxation"    label="Taxation" />} />
-        <Route path="dept/co-sec"      element={<DeptRoute deptId="co-sec"      label="Co. Sec" />} />
-        <Route path="dept/internal"    element={<DeptRoute deptId="internal"    label="Internal" />} />
+        <Route path="dept/accounting"  element={<DeptRoute deptId="accounting"  permKey="dept.accounting"  label="Accounting" />} />
+        <Route path="dept/audit"       element={<DeptRoute deptId="audit"       permKey="dept.audit"       label="Audit" />} />
+        <Route path="dept/consulting"  element={<DeptRoute deptId="consulting"  permKey="dept.consulting"  label="Consulting" />} />
+        <Route path="dept/taxation"    element={<DeptRoute deptId="taxation"    permKey="dept.taxation"    label="Taxation" />} />
+        <Route path="dept/co-sec"      element={<DeptRoute deptId="co-sec"      permKey="dept.co-sec"      label="Co. Sec" />} />
+        <Route path="dept/internal"    element={<DeptRoute deptId="internal"    permKey="dept.internal"    label="Internal" />} />
 
         {/* Forms section */}
         <Route path="forms/dashboard" element={<FormsDashboard />} />
