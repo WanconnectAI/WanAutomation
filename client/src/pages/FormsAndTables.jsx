@@ -371,6 +371,7 @@ export default function FormsAndTables() {
             Create Form
           </button>
         </div>
+        </div>
 
         {/* Search + Sort bar */}
         <div className="flex flex-wrap items-center gap-2">
