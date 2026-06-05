@@ -13,6 +13,10 @@ import FormBuilder from './pages/FormBuilder'
 import PublicForm from './pages/PublicForm'
 import Automations from './pages/Automations'
 import UserManagement from './pages/UserManagement'
+import FormsDashboard from './pages/FormsDashboard'
+import SubmissionsPage from './pages/SubmissionsPage'
+import AutomationDashboard from './pages/AutomationDashboard'
+import ComingSoonPage from './pages/ComingSoonPage'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -33,13 +37,36 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <WelcomePage />} />
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        {/* Overall */}
         <Route path="dashboard" element={<Dashboard />} />
+
+        {/* Forms section */}
+        <Route path="forms/dashboard" element={<FormsDashboard />} />
+        <Route path="forms/submissions" element={<SubmissionsPage />} />
         <Route path="forms" element={<FormsAndTables />} />
         <Route path="forms/builder" element={<FormBuilder />} />
         <Route path="forms/builder/:id" element={<FormBuilder />} />
         <Route path="forms/:formType" element={<FormView />} />
-        <Route path="workflows" element={<Workflows />} />
-        <Route path="automations" element={<Automations />} />
+
+        {/* Automation section — new paths */}
+        <Route path="automation/dashboard" element={<AutomationDashboard />} />
+        <Route path="automation/workflows" element={<Workflows />} />
+        <Route path="automation/flows" element={<Automations />} />
+
+        {/* Legacy automation routes — redirect to new paths */}
+        <Route path="workflows" element={<Navigate to="/automation/workflows" replace />} />
+        <Route path="automations" element={<Navigate to="/automation/flows" replace />} />
+
+        {/* Student Portal — coming soon */}
+        <Route path="student-portal/dashboard" element={<ComingSoonPage title="Student Dashboard" />} />
+        <Route path="student-portal/students" element={<ComingSoonPage title="Student Listing" />} />
+        <Route path="student-portal/courses" element={<ComingSoonPage title="Course Listing" />} />
+        <Route path="student-portal/enrollments" element={<ComingSoonPage title="Enrollment Details" />} />
+
+        {/* Client Portal — coming soon */}
+        <Route path="client-portal" element={<ComingSoonPage title="Client Portal" />} />
+
+        {/* User management & settings */}
         <Route path="users" element={<UserManagement />} />
         <Route path="settings" element={<Settings />} />
       </Route>
